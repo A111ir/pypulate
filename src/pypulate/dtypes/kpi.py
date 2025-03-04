@@ -73,7 +73,7 @@ class KPI:
         }
     
     @property
-    def health(self) -> Dict[str, Union[float, str, Dict[str, Dict[str, Union[float, str]]]]]:
+    def health(self) -> Dict[str, Union[float, str, Dict[str, Dict[str, Union[float, str]]], None]]:
         """
         Calculate and return the overall health of the business based on stored KPIs.
         
@@ -84,10 +84,13 @@ class KPI:
         """
         health_score = 0.0
         components = {}
+        total_weight = 0.0 
+        weight_per_metric = 0.10 
         
         if self._state['churn_rate'] is not None:
             churn_score = max(0, min(100, 100 - self._state['churn_rate']))
-            health_score += churn_score * 0.10
+            health_score += churn_score * weight_per_metric
+            total_weight += weight_per_metric
             components['churn_rate'] = {
                 'score': churn_score,
                 'status': 'Excellent' if churn_score >= 95 else 'Good' if churn_score >= 85 else 'Fair' if churn_score >= 70 else 'Poor' if churn_score >= 50 else 'Critical'
@@ -95,7 +98,8 @@ class KPI:
             
         if self._state['retention_rate'] is not None:
             retention_score = self._state['retention_rate']
-            health_score += retention_score * 0.10
+            health_score += retention_score * weight_per_metric
+            total_weight += weight_per_metric
             components['retention_rate'] = {
                 'score': retention_score,
                 'status': 'Excellent' if retention_score >= 95 else 'Good' if retention_score >= 85 else 'Fair' if retention_score >= 70 else 'Poor' if retention_score >= 50 else 'Critical'
@@ -103,7 +107,8 @@ class KPI:
 
         if self._state['ltv_cac_ratio'] is not None:
             ltv_cac_score = min(100, self._state['ltv_cac_ratio'] * 20)
-            health_score += ltv_cac_score * 0.10
+            health_score += ltv_cac_score * weight_per_metric
+            total_weight += weight_per_metric
             components['ltv_cac_ratio'] = {
                 'score': ltv_cac_score,
                 'status': 'Excellent' if ltv_cac_score >= 80 else 'Good' if ltv_cac_score >= 60 else 'Fair' if ltv_cac_score >= 40 else 'Poor' if ltv_cac_score >= 20 else 'Critical'
@@ -111,7 +116,8 @@ class KPI:
 
         if self._state['gross_margin'] is not None:
             margin_score = self._state['gross_margin']
-            health_score += margin_score * 0.10
+            health_score += margin_score * weight_per_metric
+            total_weight += weight_per_metric
             components['gross_margin'] = {
                 'score': margin_score,
                 'status': 'Excellent' if margin_score >= 80 else 'Good' if margin_score >= 70 else 'Fair' if margin_score >= 50 else 'Poor' if margin_score >= 30 else 'Critical'
@@ -119,7 +125,8 @@ class KPI:
 
         if self._state['net_promoter_score'] is not None:
             nps_score = max(0, min(100, self._state['net_promoter_score'] + 50))
-            health_score += nps_score * 0.10
+            health_score += nps_score * weight_per_metric
+            total_weight += weight_per_metric
             components['net_promoter_score'] = {
                 'score': nps_score,
                 'status': 'Excellent' if nps_score >= 60 else 'Good' if nps_score >= 50 else 'Fair' if nps_score >= 30 else 'Poor' if nps_score >= 20 else 'Critical'
@@ -127,7 +134,8 @@ class KPI:
 
         if self._state['customer_satisfaction_score'] is not None:
             csat_score = self._state['customer_satisfaction_score']
-            health_score += csat_score * 0.10
+            health_score += csat_score * weight_per_metric
+            total_weight += weight_per_metric
             components['customer_satisfaction_score'] = {
                 'score': csat_score,
                 'status': 'Excellent' if csat_score >= 90 else 'Good' if csat_score >= 85 else 'Fair' if csat_score >= 70 else 'Poor' if csat_score >= 50 else 'Critical'
@@ -135,7 +143,8 @@ class KPI:
 
         if self._state['expansion_revenue_rate'] is not None:
             expansion_score = min(100, max(0, self._state['expansion_revenue_rate'] * 2))
-            health_score += expansion_score * 0.10
+            health_score += expansion_score * weight_per_metric
+            total_weight += weight_per_metric
             components['expansion_revenue_rate'] = {
                 'score': expansion_score,
                 'status': 'Excellent' if expansion_score >= 30 else 'Good' if expansion_score >= 20 else 'Fair' if expansion_score >= 10 else 'Poor' if expansion_score >= 5 else 'Critical'
@@ -143,7 +152,8 @@ class KPI:
 
         if self._state['stickiness_ratio'] is not None:
             stickiness_score = self._state['stickiness_ratio']
-            health_score += stickiness_score * 0.10
+            health_score += stickiness_score * weight_per_metric
+            total_weight += weight_per_metric
             components['stickiness_ratio'] = {
                 'score': stickiness_score,
                 'status': 'Excellent' if stickiness_score >= 70 else 'Good' if stickiness_score >= 50 else 'Fair' if stickiness_score >= 30 else 'Poor' if stickiness_score >= 20 else 'Critical'
@@ -151,7 +161,8 @@ class KPI:
 
         if self._state['runway'] is not None:
             runway_score = min(100, max(0, self._state['runway'] * 5))
-            health_score += runway_score * 0.10
+            health_score += runway_score * weight_per_metric
+            total_weight += weight_per_metric
             components['runway'] = {
                 'score': runway_score,
                 'status': 'Excellent' if runway_score >= 18 else 'Good' if runway_score >= 12 else 'Fair' if runway_score >= 6 else 'Poor' if runway_score >= 3 else 'Critical'
@@ -159,16 +170,24 @@ class KPI:
 
         if self._state['roi'] is not None:
             roi_score = min(100, max(0, self._state['roi']))
-            health_score += roi_score * 0.10
+            health_score += roi_score * weight_per_metric
+            total_weight += weight_per_metric
             components['roi'] = {
                 'score': roi_score,
                 'status': 'Excellent' if roi_score >= 50 else 'Good' if roi_score >= 30 else 'Fair' if roi_score >= 15 else 'Poor' if roi_score >= 5 else 'Critical'
             }
 
+        final_score = (health_score / total_weight) if total_weight > 0 else None
+
         return {
-            'overall_score': health_score,
-            'status': 'Excellent' if health_score >= 90 else 'Good' if health_score >= 75 else 'Fair' if health_score >= 60 else 'Poor' if health_score >= 45 else 'Critical',
-            'components': components
+            'overall_score': final_score,
+            'status': ('Excellent' if final_score >= 90 
+                      else 'Good' if final_score >= 75 
+                      else 'Fair' if final_score >= 60 
+                      else 'Poor' if final_score >= 45 
+                      else 'Critical') if final_score is not None else 'Not enough data',
+            'components': components,
+            'metrics_counted': round(total_weight / weight_per_metric)  
         }
     
     def churn_rate(

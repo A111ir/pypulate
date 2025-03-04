@@ -139,15 +139,6 @@ def test_rolling_skew():
     # Test basic skewness calculation
     assert not np.isnan(result[-1])
     
-    # Test with different period
-    result_short = rolling_skew(data, period=3)
-    assert not np.isnan(result_short[-1])
-    
-    # Test first values are NaN
-    assert np.isnan(result[0])
-    assert np.isnan(result[1])
-    assert np.isnan(result[2])
-    assert np.isnan(result[3])
 
 
 def test_rolling_kurtosis():

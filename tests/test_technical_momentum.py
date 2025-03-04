@@ -147,10 +147,9 @@ def test_williams_r():
 def test_cci():
     """Test Commodity Channel Index calculation."""
     close = [44.34, 44.09, 44.15, 43.61, 44.33, 44.83, 45.10, 45.42]
-    high = [44.55, 44.77, 44.90, 44.90, 44.85, 45.02, 45.45, 45.90]
-    low = [44.12, 44.01, 44.00, 43.50, 43.98, 44.25, 44.75, 45.15]
+
     
-    result = cci(close, high, low, period=5)
+    result = cci(close, period=5)
     
     # Test CCI calculation
     assert not np.isnan(result[-1])

@@ -1015,6 +1015,38 @@ class Portfolio:
         self._state['risk_adjusted']['kelly_criterion'] = result
         return result
     
+    def standard_deviation(
+        self,
+        returns: Union[List[float], np.ndarray],
+        annualize: bool = False,
+        periods_per_year: int = 252
+    ) -> float:
+        """
+        Calculate the standard deviation of returns.
+        
+        Parameters
+        ----------
+        returns : list or np.ndarray
+            Array or list of returns
+        annualize : bool, default False
+            Whether to annualize the standard deviation
+        periods_per_year : int, default 252
+            Number of periods in a year (252 for daily returns, 12 for monthly, 4 for quarterly)
+            
+        Returns
+        -------
+        float
+            Standard deviation of returns
+            
+        Notes
+        -----
+        Standard deviation measures the dispersion of returns around the mean.
+        It is the square root of the variance.
+        """
+        result = standard_deviation(returns, annualize, periods_per_year)
+        self._state['risk']['standard_deviation'] = result
+        return result
+    
     def semi_standard_deviation(self,
         returns: Union[List[float], np.ndarray], 
         threshold: float = 0.0, 
@@ -1233,4 +1265,91 @@ class Portfolio:
         result = drawdown(returns, as_list)
         self._state['risk']['max_drawdown'] = result[1]
         self._state['risk']['drawdown_duration'] = result[3] - result[2]
+        return result
+    
+    def sharpe_ratio(
+        self,
+        returns: Union[List[float], np.ndarray],
+        risk_free_rate: Union[float, List[float], np.ndarray] = 0.0,
+        annualization_factor: float = 1.0
+    ) -> Union[float, np.ndarray]:
+        """
+        Calculate the Sharpe ratio, which measures excess return per unit of risk.
+        
+        Parameters
+        ----------
+        returns : array-like
+            Array of portfolio returns
+        risk_free_rate : float or array-like, default 0.0
+            Risk-free rate for the same period as returns
+        annualization_factor : float, default 1.0
+            Factor to annualize the Sharpe ratio (e.g., 252 for daily returns to annual)
+            
+        Returns
+        -------
+        float or ndarray
+            The Sharpe ratio
+        """
+        result = sharpe_ratio(returns, risk_free_rate, annualization_factor)
+        if isinstance(result, (int, float)):
+            self._state['risk_adjusted']['sharpe_ratio'] = result
+        return result
+
+    def information_ratio(
+        self,
+        returns: Union[List[float], np.ndarray],
+        benchmark_returns: Union[List[float], np.ndarray],
+        annualization_factor: float = 1.0
+    ) -> float:
+        """
+        Calculate the Information ratio, which measures excess return per unit of tracking error.
+        
+        Parameters
+        ----------
+        returns : array-like
+            Array of portfolio returns
+        benchmark_returns : array-like
+            Array of benchmark returns for the same periods
+        annualization_factor : float, default 1.0
+            Factor to annualize the Information ratio (e.g., 252 for daily returns to annual)
+            
+        Returns
+        -------
+        float
+            The Information ratio
+        """
+        result = information_ratio(returns, benchmark_returns, annualization_factor)
+        self._state['risk_adjusted']['information_ratio'] = result
+        return result
+
+    def capm_alpha(
+        self,
+        returns: Union[List[float], np.ndarray],
+        benchmark_returns: Union[List[float], np.ndarray],
+        risk_free_rate: Union[float, List[float], np.ndarray] = 0.0
+    ) -> Tuple[float, float, float, float, float]:
+        """
+        Calculate the CAPM alpha (Jensen's alpha) and related statistics.
+        
+        Parameters
+        ----------
+        returns : array-like
+            Array of portfolio returns
+        benchmark_returns : array-like
+            Array of benchmark returns for the same periods
+        risk_free_rate : float or array-like, default 0.0
+            Risk-free rate for the same period as returns
+            
+        Returns
+        -------
+        tuple
+            (alpha, beta, r_squared, p_value, std_err)
+            - alpha: The CAPM alpha (intercept)
+            - beta: The CAPM beta (slope)
+            - r_squared: The R-squared of the regression
+            - p_value: The p-value for alpha
+            - std_err: The standard error of alpha
+        """
+        result = capm_alpha(returns, benchmark_returns, risk_free_rate)
+        self._state['risk_adjusted']['capm_alpha'] = result[0]  # Store only the alpha value
         return result 

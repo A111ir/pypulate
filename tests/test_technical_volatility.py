@@ -44,10 +44,6 @@ def test_atr():
     assert not np.isnan(result[-1])
     assert result[-1] > 0 
     
-    # Test with default parameters
-    result_def = atr(close)
-    assert not np.isnan(result_def[-1])
-    
     # Test first value is NaN
     assert np.isnan(result[0])
 

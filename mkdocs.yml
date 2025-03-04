@@ -1,5 +1,5 @@
 site_name: Pypulate
-site_description: A Python package for financial time series analysis and business KPIs
+site_description: a comprehensive Python framework designed for financial analysis, business metrics tracking, portfolio management, and service pricing.
 site_author: Amir Rezaei
 repo_url: https://github.com/A111ir/pypulate
 repo_name: pypulate
