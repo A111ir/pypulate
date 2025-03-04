@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="A Python package for financial time series analysis and business KPIs">
+        <meta name="description" content="a comprehensive Python framework designed for financial analysis, business metrics tracking, portfolio management, and service pricing.">
       
       
         <meta name="author" content="Amir Rezaei">
@@ -1354,6 +1354,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#pypulate.dtypes.portfolio.Portfolio.capm_alpha" class="md-nav__link">
+    <span class="md-ellipsis">
+      capm_alpha
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#pypulate.dtypes.portfolio.Portfolio.capm_beta" class="md-nav__link">
     <span class="md-ellipsis">
       capm_beta
@@ -1420,6 +1429,15 @@
   <a href="#pypulate.dtypes.portfolio.Portfolio.holding_period_return" class="md-nav__link">
     <span class="md-ellipsis">
       holding_period_return
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pypulate.dtypes.portfolio.Portfolio.information_ratio" class="md-nav__link">
+    <span class="md-ellipsis">
+      information_ratio
     </span>
   </a>
   
@@ -1525,6 +1543,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#pypulate.dtypes.portfolio.Portfolio.sharpe_ratio" class="md-nav__link">
+    <span class="md-ellipsis">
+      sharpe_ratio
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#pypulate.dtypes.portfolio.Portfolio.simple_return" class="md-nav__link">
     <span class="md-ellipsis">
       simple_return
@@ -1537,6 +1564,15 @@
   <a href="#pypulate.dtypes.portfolio.Portfolio.sortino_ratio" class="md-nav__link">
     <span class="md-ellipsis">
       sortino_ratio
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pypulate.dtypes.portfolio.Portfolio.standard_deviation" class="md-nav__link">
+    <span class="md-ellipsis">
+      standard_deviation
     </span>
   </a>
   
@@ -2249,6 +2285,114 @@ If array inputs are provided, returns an array of beta-adjusted returns</p>
 <div class="doc doc-object doc-function">
 
 
+<h3 id="pypulate.dtypes.portfolio.Portfolio.capm_alpha" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">capm_alpha</span><span class="p">(</span><span class="n">returns</span><span class="p">,</span> <span class="n">benchmark_returns</span><span class="p">,</span> <span class="n">risk_free_rate</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Calculate the CAPM alpha (Jensen's alpha) and related statistics.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>returns</code>
+            </td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Array of portfolio returns</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>benchmark_returns</code>
+            </td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Array of benchmark returns for the same periods</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>risk_free_rate</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span> or <span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Risk-free rate for the same period as returns</p>
+              </div>
+            </td>
+            <td>
+                  <code>0.0</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="tuple">tuple</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>(alpha, beta, r_squared, p_value, std_err)
+- alpha: The CAPM alpha (intercept)
+- beta: The CAPM beta (slope)
+- r_squared: The R-squared of the regression
+- p_value: The p-value for alpha
+- std_err: The standard error of alpha</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
 <h3 id="pypulate.dtypes.portfolio.Portfolio.capm_beta" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">capm_beta</span><span class="p">(</span><span class="n">portfolio_returns</span><span class="p">,</span> <span class="n">market_returns</span><span class="p">)</span></code>
 
@@ -2910,6 +3054,109 @@ returns of different assets, normalized to be between -1 and 1.</p>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">holding_period_return</span><span class="p">([</span><span class="mi">100</span><span class="p">,</span> <span class="mi">102</span><span class="p">,</span> <span class="mi">105</span><span class="p">,</span> <span class="mi">103</span><span class="p">,</span> <span class="mi">106</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go">0.09</span>
 </code></pre></div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pypulate.dtypes.portfolio.Portfolio.information_ratio" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">information_ratio</span><span class="p">(</span><span class="n">returns</span><span class="p">,</span> <span class="n">benchmark_returns</span><span class="p">,</span> <span class="n">annualization_factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Calculate the Information ratio, which measures excess return per unit of tracking error.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>returns</code>
+            </td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Array of portfolio returns</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>benchmark_returns</code>
+            </td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Array of benchmark returns for the same periods</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>annualization_factor</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Factor to annualize the Information ratio (e.g., 252 for daily returns to annual)</p>
+              </div>
+            </td>
+            <td>
+                  <code>1.0</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The Information ratio</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
     </div>
 
@@ -4261,6 +4508,109 @@ making it a measure of downside risk.</p>
 <div class="doc doc-object doc-function">
 
 
+<h3 id="pypulate.dtypes.portfolio.Portfolio.sharpe_ratio" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">sharpe_ratio</span><span class="p">(</span><span class="n">returns</span><span class="p">,</span> <span class="n">risk_free_rate</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">annualization_factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Calculate the Sharpe ratio, which measures excess return per unit of risk.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>returns</code>
+            </td>
+            <td>
+                  <code><span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Array of portfolio returns</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>risk_free_rate</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span> or <span title="array">array</span> - <span title="like">like</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Risk-free rate for the same period as returns</p>
+              </div>
+            </td>
+            <td>
+                  <code>0.0</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>annualization_factor</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Factor to annualize the Sharpe ratio (e.g., 252 for daily returns to annual)</p>
+              </div>
+            </td>
+            <td>
+                  <code>1.0</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="float">float</span> or <span title="ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The Sharpe ratio</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
 <h3 id="pypulate.dtypes.portfolio.Portfolio.simple_return" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">simple_return</span><span class="p">(</span><span class="n">end_value</span><span class="p">,</span> <span class="n">start_value</span><span class="p">)</span></code>
 
@@ -4477,6 +4827,115 @@ If array inputs are provided, returns an array of simple returns</p>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="go">3.7947331922020545</span>
 </code></pre></div>
 
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pypulate.dtypes.portfolio.Portfolio.standard_deviation" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">standard_deviation</span><span class="p">(</span><span class="n">returns</span><span class="p">,</span> <span class="n">annualize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">periods_per_year</span><span class="o">=</span><span class="mi">252</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Calculate the standard deviation of returns.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>returns</code>
+            </td>
+            <td>
+                  <code><span title="list">list</span> or <span title="numpy.ndarray">ndarray</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Array or list of returns</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>annualize</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to annualize the standard deviation</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>periods_per_year</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Number of periods in a year (252 for daily returns, 12 for monthly, 4 for quarterly)</p>
+              </div>
+            </td>
+            <td>
+                  <code>252</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Standard deviation of returns</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<details class="note" open>
+  <summary>Notes</summary>
+  <p>Standard deviation measures the dispersion of returns around the mean.
+It is the square root of the variance.</p>
+</details>
     </div>
 
 </div>
