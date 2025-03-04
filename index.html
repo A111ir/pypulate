@@ -338,6 +338,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#allocation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Allocation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#servicepricing" class="md-nav__link">
     <span class="md-ellipsis">
       ServicePricing
@@ -452,6 +461,8 @@
       
         
       
+        
+      
     
     
     
@@ -534,28 +545,6 @@
   
   
     <li class="md-nav__item">
-      <a href="user-guide/portfolio/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Portfolio
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="user-guide/kpi/" class="md-nav__link">
         
   
@@ -583,6 +572,50 @@
   
   <span class="md-ellipsis">
     Service Pricing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="user-guide/portfolio/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Portfolio
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="user-guide/allocation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Allocation
     
   </span>
   
@@ -696,6 +729,8 @@
   
     
     
+      
+        
       
         
       
@@ -1314,6 +1349,78 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Allocation
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_5">
+            <span class="md-nav__icon md-icon"></span>
+            Allocation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/optimization/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Optimization
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1442,6 +1549,15 @@
   <a href="#portfolio" class="md-nav__link">
     <span class="md-ellipsis">
       Portfolio
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#allocation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Allocation
     </span>
   </a>
   
@@ -1602,45 +1718,76 @@
 <a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a><span class="c1"># Portfolio Health</span>
 <a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a><span class="n">health</span> <span class="o">=</span> <span class="n">portfolio</span><span class="o">.</span><span class="n">health</span>  <span class="c1"># Returns portfolio health analysis</span>
 </code></pre></div>
+<h3 id="allocation">Allocation</h3>
+<p>A comprehensive class for portfolio optimization and asset allocation:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pypulate</span><span class="w"> </span><span class="kn">import</span> <span class="n">Allocation</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="n">allocation</span> <span class="o">=</span> <span class="n">Allocation</span><span class="p">()</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="c1"># Sample returns data (252 days, 5 assets)</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="n">returns</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mf">0.0001</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="p">(</span><span class="mi">252</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="n">risk_free_rate</span> <span class="o">=</span> <span class="mf">0.04</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="c1"># Mean-Variance Optimization</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="n">weights</span><span class="p">,</span> <span class="n">ret</span><span class="p">,</span> <span class="n">risk</span> <span class="o">=</span> <span class="n">allocation</span><span class="o">.</span><span class="n">mean_variance</span><span class="p">(</span><span class="n">returns</span><span class="p">,</span> <span class="n">risk_free_rate</span><span class="o">=</span><span class="n">risk_free_rate</span><span class="p">)</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="c1"># Risk Parity Portfolio</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="n">weights</span><span class="p">,</span> <span class="n">ret</span><span class="p">,</span> <span class="n">risk</span> <span class="o">=</span> <span class="n">allocation</span><span class="o">.</span><span class="n">risk_parity</span><span class="p">(</span><span class="n">returns</span><span class="p">)</span>
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a><span class="c1"># Kelly Criterion (with half-Kelly for conservative sizing)</span>
+<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="n">weights</span><span class="p">,</span> <span class="n">ret</span><span class="p">,</span> <span class="n">risk</span> <span class="o">=</span> <span class="n">allocation</span><span class="o">.</span><span class="n">kelly_criterion</span><span class="p">(</span><span class="n">returns</span><span class="p">,</span> <span class="n">kelly_fraction</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>
+<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a><span class="c1"># Black-Litterman with views</span>
+<a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a><span class="n">views</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="mf">0.12</span><span class="p">}</span>  <span class="c1"># Views on first two assets</span>
+<a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a><span class="n">view_confidences</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">}</span>
+<a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a><span class="n">market_caps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">800</span><span class="p">,</span> <span class="mi">600</span><span class="p">,</span> <span class="mi">400</span><span class="p">,</span> <span class="mi">200</span><span class="p">])</span>
+<a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a><span class="n">weights</span><span class="p">,</span> <span class="n">ret</span><span class="p">,</span> <span class="n">risk</span> <span class="o">=</span> <span class="n">allocation</span><span class="o">.</span><span class="n">black_litterman</span><span class="p">(</span>
+<a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a>    <span class="n">returns</span><span class="p">,</span> <span class="n">market_caps</span><span class="p">,</span> <span class="n">views</span><span class="p">,</span> <span class="n">view_confidences</span>
+<a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a><span class="p">)</span>
+<a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a>
+<a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a><span class="c1"># Hierarchical Risk Parity</span>
+<a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a><span class="n">weights</span><span class="p">,</span> <span class="n">ret</span><span class="p">,</span> <span class="n">risk</span> <span class="o">=</span> <span class="n">allocation</span><span class="o">.</span><span class="n">hierarchical_risk_parity</span><span class="p">(</span><span class="n">returns</span><span class="p">)</span>
+</code></pre></div>
 <h3 id="servicepricing">ServicePricing</h3>
 <p>A unified interface for calculating and managing various service pricing models:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pypulate</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServicePricing</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="n">pricing</span> <span class="o">=</span> <span class="n">ServicePricing</span><span class="p">()</span>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="c1"># Tiered Pricing</span>
-<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="n">price</span> <span class="o">=</span> <span class="n">pricing</span><span class="o">.</span><span class="n">calculate_tiered_price</span><span class="p">(</span>
-<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>    <span class="n">usage_units</span><span class="o">=</span><span class="mi">1500</span><span class="p">,</span>
-<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>    <span class="n">tiers</span><span class="o">=</span><span class="p">{</span>
-<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>        <span class="s2">&quot;0-1000&quot;</span><span class="p">:</span> <span class="mf">0.10</span><span class="p">,</span>    <span class="c1"># $0.10 per unit for first 1000 units</span>
-<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>        <span class="s2">&quot;1001-2000&quot;</span><span class="p">:</span> <span class="mf">0.08</span><span class="p">,</span> <span class="c1"># $0.08 per unit for next 500 units</span>
-<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>        <span class="s2">&quot;2001+&quot;</span><span class="p">:</span> <span class="mf">0.05</span>      <span class="c1"># $0.05 per unit for remaining units</span>
-<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>    <span class="p">}</span>
-<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="p">)</span>
-<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>
-<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="c1"># Subscription with Features</span>
-<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a><span class="n">sub_price</span> <span class="o">=</span> <span class="n">pricing</span><span class="o">.</span><span class="n">calculate_subscription_price</span><span class="p">(</span>
-<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>    <span class="n">base_price</span><span class="o">=</span><span class="mf">99.99</span><span class="p">,</span>
-<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>    <span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;premium&#39;</span><span class="p">,</span> <span class="s1">&#39;api_access&#39;</span><span class="p">],</span>
-<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>    <span class="n">feature_prices</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;premium&#39;</span><span class="p">:</span> <span class="mf">49.99</span><span class="p">,</span> <span class="s1">&#39;api_access&#39;</span><span class="p">:</span> <span class="mf">29.99</span><span class="p">},</span>
-<a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a>    <span class="n">duration_months</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
-<a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a>    <span class="n">discount_rate</span><span class="o">=</span><span class="mf">0.10</span>
-<a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a><span class="p">)</span>
-<a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a>
-<a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a><span class="c1"># Dynamic Pricing</span>
-<a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a><span class="n">dynamic_price</span> <span class="o">=</span> <span class="n">pricing</span><span class="o">.</span><span class="n">apply_dynamic_pricing</span><span class="p">(</span>
-<a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a>    <span class="n">base_price</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span>
-<a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a>    <span class="n">demand_factor</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span>
-<a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a>    <span class="n">competition_factor</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
-<a id="__codelineno-3-29" name="__codelineno-3-29" href="#__codelineno-3-29"></a>    <span class="n">seasonality_factor</span><span class="o">=</span><span class="mf">1.1</span>
-<a id="__codelineno-3-30" name="__codelineno-3-30" href="#__codelineno-3-30"></a><span class="p">)</span>
-<a id="__codelineno-3-31" name="__codelineno-3-31" href="#__codelineno-3-31"></a>
-<a id="__codelineno-3-32" name="__codelineno-3-32" href="#__codelineno-3-32"></a><span class="c1"># Track Pricing History</span>
-<a id="__codelineno-3-33" name="__codelineno-3-33" href="#__codelineno-3-33"></a><span class="n">pricing</span><span class="o">.</span><span class="n">save_current_pricing</span><span class="p">()</span>
-<a id="__codelineno-3-34" name="__codelineno-3-34" href="#__codelineno-3-34"></a><span class="n">history</span> <span class="o">=</span> <span class="n">pricing</span><span class="o">.</span><span class="n">get_pricing_history</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pypulate</span><span class="w"> </span><span class="kn">import</span> <span class="n">ServicePricing</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">pricing</span> <span class="o">=</span> <span class="n">ServicePricing</span><span class="p">()</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="c1"># Tiered Pricing</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="n">price</span> <span class="o">=</span> <span class="n">pricing</span><span class="o">.</span><span class="n">calculate_tiered_price</span><span class="p">(</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>    <span class="n">usage_units</span><span class="o">=</span><span class="mi">1500</span><span class="p">,</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>    <span class="n">tiers</span><span class="o">=</span><span class="p">{</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>        <span class="s2">&quot;0-1000&quot;</span><span class="p">:</span> <span class="mf">0.10</span><span class="p">,</span>    <span class="c1"># $0.10 per unit for first 1000 units</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>        <span class="s2">&quot;1001-2000&quot;</span><span class="p">:</span> <span class="mf">0.08</span><span class="p">,</span> <span class="c1"># $0.08 per unit for next 500 units</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>        <span class="s2">&quot;2001+&quot;</span><span class="p">:</span> <span class="mf">0.05</span>      <span class="c1"># $0.05 per unit for remaining units</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>    <span class="p">}</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="p">)</span>
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>
+<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="c1"># Subscription with Features</span>
+<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="n">sub_price</span> <span class="o">=</span> <span class="n">pricing</span><span class="o">.</span><span class="n">calculate_subscription_price</span><span class="p">(</span>
+<a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>    <span class="n">base_price</span><span class="o">=</span><span class="mf">99.99</span><span class="p">,</span>
+<a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a>    <span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;premium&#39;</span><span class="p">,</span> <span class="s1">&#39;api_access&#39;</span><span class="p">],</span>
+<a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a>    <span class="n">feature_prices</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;premium&#39;</span><span class="p">:</span> <span class="mf">49.99</span><span class="p">,</span> <span class="s1">&#39;api_access&#39;</span><span class="p">:</span> <span class="mf">29.99</span><span class="p">},</span>
+<a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a>    <span class="n">duration_months</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+<a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a>    <span class="n">discount_rate</span><span class="o">=</span><span class="mf">0.10</span>
+<a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a><span class="p">)</span>
+<a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a>
+<a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a><span class="c1"># Dynamic Pricing</span>
+<a id="__codelineno-4-25" name="__codelineno-4-25" href="#__codelineno-4-25"></a><span class="n">dynamic_price</span> <span class="o">=</span> <span class="n">pricing</span><span class="o">.</span><span class="n">apply_dynamic_pricing</span><span class="p">(</span>
+<a id="__codelineno-4-26" name="__codelineno-4-26" href="#__codelineno-4-26"></a>    <span class="n">base_price</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span>
+<a id="__codelineno-4-27" name="__codelineno-4-27" href="#__codelineno-4-27"></a>    <span class="n">demand_factor</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span>
+<a id="__codelineno-4-28" name="__codelineno-4-28" href="#__codelineno-4-28"></a>    <span class="n">competition_factor</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+<a id="__codelineno-4-29" name="__codelineno-4-29" href="#__codelineno-4-29"></a>    <span class="n">seasonality_factor</span><span class="o">=</span><span class="mf">1.1</span>
+<a id="__codelineno-4-30" name="__codelineno-4-30" href="#__codelineno-4-30"></a><span class="p">)</span>
+<a id="__codelineno-4-31" name="__codelineno-4-31" href="#__codelineno-4-31"></a>
+<a id="__codelineno-4-32" name="__codelineno-4-32" href="#__codelineno-4-32"></a><span class="c1"># Track Pricing History</span>
+<a id="__codelineno-4-33" name="__codelineno-4-33" href="#__codelineno-4-33"></a><span class="n">pricing</span><span class="o">.</span><span class="n">save_current_pricing</span><span class="p">()</span>
+<a id="__codelineno-4-34" name="__codelineno-4-34" href="#__codelineno-4-34"></a><span class="n">history</span> <span class="o">=</span> <span class="n">pricing</span><span class="o">.</span><span class="n">get_pricing_history</span><span class="p">()</span>
 </code></pre></div>
 <h2 id="installation">Installation</h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>pip<span class="w"> </span>install<span class="w"> </span>pypulate
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>pip<span class="w"> </span>install<span class="w"> </span>pypulate
 </code></pre></div>
 <h2 id="key-features">Key Features</h2>
 <ul>
@@ -1668,6 +1815,14 @@
 <li>Performance attribution</li>
 <li>
 <p>Health assessment</p>
+</li>
+<li>
+<p><strong>Allocation</strong>:</p>
+</li>
+<li>Portfolio optimization</li>
+<li>Asset allocation</li>
+<li>
+<p>Risk management</p>
 </li>
 <li>
 <p><strong>ServicePricing</strong>:</p>
