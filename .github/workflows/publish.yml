@@ -21,6 +21,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          fetch-tags: true
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -33,10 +34,21 @@ jobs:
           python -m pip install --upgrade pip
           pip install hatch
 
+      - name: Clean previous builds
+        run: |
+          rm -rf dist/ build/ *.egg-info/
+          
+      - name: Show current version
+        run: hatch version
+
       - name: Build package
         run: hatch build
+
+      - name: List built packages
+        run: ls -l dist/
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          verbose: true 
+          verbose: true
+          skip-existing: true 
