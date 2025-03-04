@@ -92,7 +92,72 @@ print(f"Portfolio Health Score: {health['overall_score']}")
 print(f"Risk Status: {health['components']['risk']['status']}")
 ```
 
-### 4. ServicePricing
+### 4. Allocation
+
+The `Allocation` class provides advanced portfolio optimization and asset allocation methods:
+
+```python
+from pypulate import Allocation
+import numpy as np
+
+# Initialize allocation optimizer
+allocation = Allocation()
+
+# Sample returns data (252 days, 5 assets)
+returns = np.random.normal(0.0001, 0.02, (252, 5))
+risk_free_rate = 0.04
+
+# Mean-Variance Optimization
+weights, ret, risk = allocation.mean_variance(
+    returns, 
+    risk_free_rate=risk_free_rate
+)
+print(f"Mean-Variance Portfolio:")
+print(f"Expected Return: {ret:.2%}")
+print(f"Risk: {risk:.2%}")
+print(f"Weights: {weights}")
+
+# Risk Parity Portfolio
+weights, ret, risk = allocation.risk_parity(returns)
+print(f"\nRisk Parity Portfolio:")
+print(f"Expected Return: {ret:.2%}")
+print(f"Risk: {risk:.2%}")
+print(f"Weights: {weights}")
+
+# Kelly Criterion (with half-Kelly)
+weights, ret, risk = allocation.kelly_criterion(
+    returns, 
+    kelly_fraction=0.5
+)
+print(f"\nHalf-Kelly Portfolio:")
+print(f"Expected Return: {ret:.2%}")
+print(f"Risk: {risk:.2%}")
+print(f"Weights: {weights}")
+
+# Black-Litterman with views
+views = {0: 0.15, 1: 0.12}  # Views on first two assets
+view_confidences = {0: 0.8, 1: 0.7}
+market_caps = np.array([1000, 800, 600, 400, 200])
+weights, ret, risk = allocation.black_litterman(
+    returns, 
+    market_caps, 
+    views, 
+    view_confidences
+)
+print(f"\nBlack-Litterman Portfolio:")
+print(f"Expected Return: {ret:.2%}")
+print(f"Risk: {risk:.2%}")
+print(f"Weights: {weights}")
+
+# Hierarchical Risk Parity
+weights, ret, risk = allocation.hierarchical_risk_parity(returns)
+print(f"\nHierarchical Risk Parity Portfolio:")
+print(f"Expected Return: {ret:.2%}")
+print(f"Risk: {risk:.2%}")
+print(f"Weights: {weights}")
+```
+
+### 5. ServicePricing
 
 The `ServicePricing` class provides a unified interface for various pricing models:
 

@@ -91,6 +91,41 @@ dd = portfolio.drawdown(returns)
 health = portfolio.health  # Returns portfolio health analysis
 ```
 
+### Allocation
+
+A comprehensive class for portfolio optimization and asset allocation:
+
+```python
+from pypulate import Allocation
+import numpy as np
+
+allocation = Allocation()
+
+# Sample returns data (252 days, 5 assets)
+returns = np.random.normal(0.0001, 0.02, (252, 5))
+risk_free_rate = 0.04
+
+# Mean-Variance Optimization
+weights, ret, risk = allocation.mean_variance(returns, risk_free_rate=risk_free_rate)
+
+# Risk Parity Portfolio
+weights, ret, risk = allocation.risk_parity(returns)
+
+# Kelly Criterion (with half-Kelly for conservative sizing)
+weights, ret, risk = allocation.kelly_criterion(returns, kelly_fraction=0.5)
+
+# Black-Litterman with views
+views = {0: 0.15, 1: 0.12}  # Views on first two assets
+view_confidences = {0: 0.8, 1: 0.7}
+market_caps = np.array([1000, 800, 600, 400, 200])
+weights, ret, risk = allocation.black_litterman(
+    returns, market_caps, views, view_confidences
+)
+
+# Hierarchical Risk Parity
+weights, ret, risk = allocation.hierarchical_risk_parity(returns)
+```
+
 ### ServicePricing
 
 A unified interface for calculating and managing various service pricing models:
@@ -157,6 +192,11 @@ pip install pypulate
   - Risk metrics
   - Performance attribution
   - Health assessment
+
+- **Allocation**:
+  - Portfolio optimization
+  - Asset allocation
+  - Risk management
 
 - **ServicePricing**:
   - Tiered pricing models

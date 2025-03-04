@@ -2,14 +2,14 @@
 
 ![Pypulate Logo](docs/assets/logo.png)
 
-![PyPI](https://img.shields.io/badge/pypi-v0.1.0-blue)
+[![PyPI](https://img.shields.io/badge/pypi-v0.1.0-blue)](https://pypi.org/project/pypulate/)
 ![Python](https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C%203.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Tests](https://img.shields.io/badge/tests-passing-brightgreen)
 ![Coverage](https://img.shields.io/badge/coverage-passing-brightgreen)
 ![Documentation](https://img.shields.io/badge/docs-latest-blue)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-![Downloads](https://img.shields.io/badge/downloads-0-blue)
+![Downloads](https://img.shields.io/badge/downloads--blue)
 
 > **High-performance financial and business analytics framework for Python**
 
@@ -37,6 +37,15 @@ Pypulate is a comprehensive Python framework designed for financial analysis, bu
 - Performance attribution
 - Portfolio health assessment
 - Risk management tools
+
+### Portfolio Allocation
+- Mean-Variance Optimization
+- Risk Parity Portfolio
+- Kelly Criterion (with half-Kelly option)
+- Black-Litterman model
+- Hierarchical Risk Parity
+- Custom constraints support
+- Multiple optimization methods
 
 ### Service Pricing
 - Tiered pricing models
@@ -107,6 +116,44 @@ health = portfolio.health
 print(f"Portfolio Health: {health['status']}")
 ```
 
+### Portfolio Allocation
+```python
+from pypulate import Allocation
+import numpy as np
+
+allocation = Allocation()
+
+# Sample returns data (252 days, 5 assets)
+returns = np.random.normal(0.0001, 0.02, (252, 5))
+risk_free_rate = 0.04
+
+# Mean-Variance Optimization
+weights, ret, risk = allocation.mean_variance(
+    returns, 
+    risk_free_rate=risk_free_rate
+)
+print(f"Mean-Variance Portfolio:")
+print(f"Expected Return: {ret:.2%}")
+print(f"Risk: {risk:.2%}")
+
+# Risk Parity Portfolio
+weights, ret, risk = allocation.risk_parity(returns)
+
+# Kelly Criterion (with half-Kelly)
+weights, ret, risk = allocation.kelly_criterion(
+    returns, 
+    kelly_fraction=0.5
+)
+
+# Black-Litterman with views
+views = {0: 0.15, 1: 0.12}  # Views on first two assets
+view_confidences = {0: 0.8, 1: 0.7}
+market_caps = np.array([1000, 800, 600, 400, 200])
+weights, ret, risk = allocation.black_litterman(
+    returns, market_caps, views, view_confidences
+)
+```
+
 ### Service Pricing
 ```python
 from pypulate import ServicePricing
@@ -152,6 +199,8 @@ sub_price = pricing.calculate_subscription_price(
 - Risk assessment
 - Performance attribution
 - Health monitoring
+- Asset allocation strategies
+- Multiple optimization methods
 
 ### Pricing Strategies
 - Multiple pricing models
@@ -161,13 +210,14 @@ sub_price = pricing.calculate_subscription_price(
 
 ## 📚 Documentation
 
-Comprehensive documentation is available in the docs directory:
+Comprehensive documentation is available at [https://a111ir.github.io/pypulate](https://a111ir.github.io/pypulate) or in the docs directory:
 
-- [Getting Started Guide](docs/user-guide/getting-started.md)
-- [Parray Guide](docs/user-guide/parray.md)
-- [KPI Guide](docs/user-guide/kpi.md)
-- [Portfolio Guide](docs/user-guide/portfolio.md)
-- [Service Pricing Guide](docs/user-guide/service-pricing.md)
+- [Getting Started Guide](https://a111ir.github.io/pypulate/user-guide/getting-started/)
+- [Parray Guide](https://a111ir.github.io/pypulate/user-guide/parray/)
+- [KPI Guide](https://a111ir.github.io/pypulate/user-guide/kpi/)
+- [Portfolio Guide](https://a111ir.github.io/pypulate/user-guide/portfolio/)
+- [Service Pricing Guide](https://a111ir.github.io/pypulate/user-guide/service-pricing/)
+- [Allocation Guide](https://a111ir.github.io/pypulate/user-guide/allocation/)
 
 ## 🤝 Contributing
 

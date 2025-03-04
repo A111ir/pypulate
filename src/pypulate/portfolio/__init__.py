@@ -36,7 +36,6 @@ from .risk_adjusted import (
     sortino_ratio,
     calmar_ratio,
     omega_ratio,
-    kelly_criterion
 )
 
 # Risk measurement functions
@@ -81,8 +80,7 @@ __all__ = [
     'sortino_ratio',
     'calmar_ratio',
     'omega_ratio',
-    'kelly_criterion',
-    
+
     # Risk measurement
     'standard_deviation',
     'semi_standard_deviation',

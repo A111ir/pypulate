@@ -18,7 +18,7 @@ from ..portfolio.return_measurement import (
 from ..portfolio.risk_adjusted import (
     sharpe_ratio, information_ratio, capm_alpha,
     benchmark_alpha, multifactor_alpha, treynor_ratio,
-    sortino_ratio, calmar_ratio, omega_ratio, kelly_criterion
+    sortino_ratio, calmar_ratio, omega_ratio
 )
 from ..portfolio.risk_measurement import (
     standard_deviation, semi_standard_deviation, tracking_error,
@@ -75,7 +75,6 @@ class Portfolio:
                 'sortino_ratio': None,
                 'calmar_ratio': None,
                 'omega_ratio': None,
-                'kelly_criterion': None
             },
             'risk': {
                 'standard_deviation': None,
@@ -183,7 +182,6 @@ class Portfolio:
                     'calmar_ratio': self._state['risk_adjusted']['calmar_ratio'],
                     'treynor_ratio': self._state['risk_adjusted']['treynor_ratio'],
                     'omega_ratio': self._state['risk_adjusted']['omega_ratio'],
-                    'kelly_criterion': self._state['risk_adjusted']['kelly_criterion']
                 }
             }
         
@@ -987,34 +985,7 @@ class Portfolio:
         self._state['risk_adjusted']['omega_ratio'] = result
         return result
     
-    def kelly_criterion(self,
-                returns: Union[List[float], np.ndarray],
-                risk_free_rate: Union[float, List[float], np.ndarray] = 0.0
-                ) -> float:
-        """
-        Calculate the Kelly criterion, which maximizes the expected logarithmic growth rate.
-        
-        Parameters
-        ----------
-        returns : array-like
-            Array of portfolio returns
-        risk_free_rate : float or array-like, default 0.0
-            Risk-free rate for the same period as returns
-            
-        Returns
-        ------- 
-        float
-            The Kelly criterion
-            
-        Examples
-        --------
-        >>> kelly_criterion([0.01, 0.02, -0.01, 0.03, 0.01], 0.001)
-        0.5
-        """
-        result = kelly_criterion(returns, risk_free_rate)
-        self._state['risk_adjusted']['kelly_criterion'] = result
-        return result
-    
+
     def standard_deviation(
         self,
         returns: Union[List[float], np.ndarray],

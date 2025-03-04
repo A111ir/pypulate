@@ -19,6 +19,7 @@ from .dtypes.parray import Parray
 from .dtypes.portfolio import Portfolio
 from .dtypes.kpi import KPI
 from .dtypes.service_pricing import ServicePricing
+from .dtypes.allocation import Allocation
 
 # Define package metadata
 __version__ = "0.1.0"
@@ -37,5 +38,6 @@ __all__ = [
     'Parray',
     'Portfolio',
     'KPI',
-    'ServicePricing'
+    'ServicePricing',
+    'Allocation'
 ]
