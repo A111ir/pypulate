@@ -1,6 +1,6 @@
 [project]
 name = "pypulate"
-version = "0.1.0"
+version = "0.2.0"
 description = "High-performance financial and business analytics framework for Python"
 readme = "README.md"
 authors = [
