@@ -269,7 +269,7 @@ def covariance_matrix(returns_matrix: Union[List[List[float]], np.ndarray]) -> n
 
 
 
-def correlation_matrix(returns_matrix: Union[List[List[float]], np.ndarray], as_list: bool = False) -> Union[np.ndarray, List[List[float]]]:
+def correlation_matrix(returns_matrix: Union[List[List[float]], np.ndarray]) -> np.ndarray:
     """
     Calculate the correlation matrix of returns.
     
@@ -277,9 +277,7 @@ def correlation_matrix(returns_matrix: Union[List[List[float]], np.ndarray], as_
     ----------
     returns_matrix : list of lists or np.ndarray
         Matrix of returns where each column represents an asset
-    as_list : bool, default False
-        If True, returns the result as a list of lists instead of numpy array
-        
+
     Returns
     -------
     np.ndarray or list of lists
@@ -295,8 +293,6 @@ def correlation_matrix(returns_matrix: Union[List[List[float]], np.ndarray], as_
         
     corr_matrix = np.corrcoef(returns_matrix, rowvar=False)
     
-    if as_list:
-        return cast(List[List[float]], corr_matrix.tolist())
     return corr_matrix
 
 

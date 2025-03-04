@@ -1131,7 +1131,7 @@ class Portfolio:
     
     def correlation_matrix(self, 
                            returns_matrix: Union[List[List[float]], np.ndarray], 
-                           as_list: bool = False) -> Union[float, np.ndarray]:
+                           ) -> np.ndarray:
         """
     Calculate the correlation matrix of returns.
     
@@ -1139,8 +1139,7 @@ class Portfolio:
     ----------
     returns_matrix : list of lists or np.ndarray
         Matrix of returns where each column represents an asset
-    as_list : bool, default False
-        If True, returns the result as a list of lists instead of numpy array
+
         
     Returns
     -------
@@ -1152,7 +1151,7 @@ class Portfolio:
     The correlation matrix measures the strength of the relationship between
     returns of different assets, normalized to be between -1 and 1.
     """
-        return correlation_matrix(returns_matrix, as_list)
+        return correlation_matrix(returns_matrix)
     
     def conditional_value_at_risk(self, returns: Union[List[float], np.ndarray], confidence_level: float = 0.95,
                              method: str = 'historical', current_value: float = 1.0) -> float:

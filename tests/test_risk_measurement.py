@@ -128,57 +128,26 @@ class TestRiskMeasurement(unittest.TestCase):
 
     def test_covariance_matrix(self):
         # Test with list input, numpy output
-        cov_list_np = covariance_matrix(self.multi_asset_returns_list, as_list=False)
+        cov_list_np = covariance_matrix(self.multi_asset_returns_list)
         self.assertIsInstance(cov_list_np, np.ndarray)
         self.assertEqual(cov_list_np.shape, (3, 3))  # 3x3 covariance matrix for 3 assets
-        
-        # Test with list input, list output
-        cov_list_list = covariance_matrix(self.multi_asset_returns_list, as_list=True)
-        self.assertIsInstance(cov_list_list, list)
-        self.assertEqual(len(cov_list_list), 3)
-        self.assertEqual(len(cov_list_list[0]), 3)
         
         # Test with numpy array input, numpy output
         cov_np_np = covariance_matrix(self.multi_asset_returns_array)
         self.assertIsInstance(cov_np_np, np.ndarray)
         
-        # Test with numpy array input, list output
-        cov_np_list = covariance_matrix(self.multi_asset_returns_array, as_list=True)
-        self.assertIsInstance(cov_np_list, list)
-        
-        # Results should be the same regardless of input/output type
-        for i in range(3):
-            for j in range(3):
-                self.assertAlmostEqual(cov_list_list[i][j], cov_np_np[i, j])
 
     def test_correlation_matrix(self):
         # Test with list input, numpy output
-        corr_list_np = correlation_matrix(self.multi_asset_returns_list, as_list=False)
+        corr_list_np = correlation_matrix(self.multi_asset_returns_list)
         self.assertIsInstance(corr_list_np, np.ndarray)
         self.assertEqual(corr_list_np.shape, (3, 3))  # 3x3 correlation matrix for 3 assets
-        
-        # Test with list input, list output
-        corr_list_list = correlation_matrix(self.multi_asset_returns_list, as_list=True)
-        self.assertIsInstance(corr_list_list, list)
-        self.assertEqual(len(corr_list_list), 3)
-        self.assertEqual(len(corr_list_list[0]), 3)
+
         
         # Test with numpy array input, numpy output
         corr_np_np = correlation_matrix(self.multi_asset_returns_array)
         self.assertIsInstance(corr_np_np, np.ndarray)
         
-        # Test with numpy array input, list output
-        corr_np_list = correlation_matrix(self.multi_asset_returns_array, as_list=True)
-        self.assertIsInstance(corr_np_list, list)
-        
-        # Results should be the same regardless of input/output type
-        for i in range(3):
-            for j in range(3):
-                self.assertAlmostEqual(corr_list_list[i][j], corr_np_np[i, j])
-                
-        # Diagonal elements should be 1
-        for i in range(3):
-            self.assertAlmostEqual(corr_list_list[i][i], 1.0)
 
     def test_conditional_value_at_risk(self):
         # Test with list input - historical method
