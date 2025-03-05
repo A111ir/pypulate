@@ -18,6 +18,11 @@ from .dynamic_pricing import (
     apply_dynamic_pricing,
     PricingRule
 )
+from .freemium_pricing import calculate_freemium_price
+from .loyalty_based_pricing import calculate_loyalty_price
+from .peak_pricing import calculate_peak_pricing
+from .time_based_pricing import calculate_time_based_price
+from .bundle_pricing import calculate_bundle_price
 
 __all__ = [
     'calculate_tiered_price',
@@ -25,5 +30,10 @@ __all__ = [
     'calculate_usage_price',
     'calculate_volume_discount',
     'apply_dynamic_pricing',
-    'PricingRule'
+    'PricingRule',
+    'calculate_freemium_price',
+    'calculate_loyalty_price',
+    'calculate_peak_pricing',
+    'calculate_time_based_price',
+    'calculate_bundle_price'
 ]

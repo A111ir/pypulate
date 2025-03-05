@@ -2,15 +2,14 @@
 
 ![Pypulate Logo](docs/assets/logo.png)
 
-[![PyPI](https://img.shields.io/badge/pypi-v0.1.0-blue)](https://pypi.org/project/pypulate/)
+[![PyPI](https://img.shields.io/badge/pypi-v0.2.1-blue)](https://pypi.org/project/pypulate/)
 ![Python](https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C%203.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Tests](https://img.shields.io/badge/tests-passing-brightgreen)
 ![Coverage](https://img.shields.io/badge/coverage-passing-brightgreen)
 ![Documentation](https://img.shields.io/badge/docs-latest-blue)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-![Downloads](https://img.shields.io/badge/downloads--blue)
-
+[![PyPI Downloads](https://static.pepy.tech/badge/pypulate)](https://pepy.tech/projects/pypulate)
 > **High-performance financial and business analytics framework for Python**
 
 Pypulate is a comprehensive Python framework designed for financial analysis, business metrics tracking, portfolio management, and service pricing. It provides powerful tools for quantitative analysts, business analysts, and financial professionals to analyze data, track KPIs, manage portfolios, and implement pricing strategies.

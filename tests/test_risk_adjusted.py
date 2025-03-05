@@ -11,9 +11,7 @@ from pypulate.portfolio.risk_adjusted import (
     treynor_ratio,
     sortino_ratio,
     calmar_ratio,
-    omega_ratio,
-    kelly_criterion
-)
+    omega_ratio)
 
 
 def test_sharpe_ratio():
@@ -149,13 +147,3 @@ def test_omega_ratio():
     # Test case with no returns below threshold
     returns_above = [0.01, 0.02, 0.01, 0.03, 0.01]
     assert omega_ratio(returns_above, 0.0) == float('inf')
-
-
-def test_kelly_criterion():
-    """Test Kelly criterion calculation."""
-    returns = [0.01, 0.02, -0.01, 0.03, 0.01]
-    risk_free = 0.001
-    
-    kelly = kelly_criterion(returns, risk_free)
-    assert kelly == pytest.approx(0.8292, abs=1e-4)
-

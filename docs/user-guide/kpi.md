@@ -173,9 +173,18 @@ stored_retention = kpi._state['retention_rate']
 
 ## Best Practices
 
-1. **Initialize Early**: Create the KPI instance at the start of your analysis
-2. **Regular Updates**: Update metrics consistently for accurate trending
-3. **Monitor Health**: Regularly check the health assessment
-4. **Store History**: Consider saving state for long-term analysis
-5. **Validate Inputs**: Ensure input data quality for accurate metrics
+### 1. Data Collection and Management
+- 1.1. **Initialize Early**: Create the KPI instance at the start of your analysis
+- 1.2. **Regular Updates**: Update metrics consistently for accurate trending
+- 1.3. **Store History**: Consider saving state for long-term analysis
+
+### 2. Analysis and Monitoring
+- 2.1. **Monitor Health**: Regularly check the health assessment
+- 2.2. **Validate Inputs**: Ensure input data quality for accurate metrics
+- 2.3. **Compare Trends**: Analyze metric changes over time rather than isolated values
+
+### 3. Reporting and Decision Making
+- 3.1. **Focus on Key Metrics**: Prioritize metrics most relevant to your business model
+- 3.2. **Set Thresholds**: Establish alert thresholds for critical metrics
+- 3.3. **Contextualize Results**: Consider market conditions when interpreting metrics
 ``` 

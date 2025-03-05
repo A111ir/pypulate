@@ -163,41 +163,41 @@ for method_name, (weights, ret, risk) in methods:
 
 ## Best Practices
 
-1. **Data Quality**:
-   - Use clean, adjusted price data
-   - Handle missing values appropriately
-   - Consider transaction costs and liquidity
+### 1. Data Preparation
+- 1.1. **Data Quality**: Use clean, adjusted price data
+- 1.2. **Missing Values**: Handle missing values appropriately
+- 1.3. **Transaction Costs**: Consider transaction costs and liquidity
 
-2. **Risk Management**:
-   - Consider using half-Kelly or quarter-Kelly for more conservative position sizing
-   - Implement position limits and constraints
-   - Monitor portfolio turnover
+### 2. Risk Management
+- 2.1. **Position Sizing**: Consider using half-Kelly or quarter-Kelly for more conservative position sizing
+- 2.2. **Constraints**: Implement position limits and constraints
+- 2.3. **Monitoring**: Monitor portfolio turnover and rebalancing needs
 
-3. **Method Selection**:
-   - Mean-Variance: Good for traditional portfolio optimization
-   - Risk Parity: Better for risk management
-   - Kelly Criterion: Best for long-term growth
-   - Black-Litterman: Ideal when you have strong market views
-   - HRP: More robust to estimation errors
+### 3. Method Selection
+- 3.1. **Mean-Variance**: Good for traditional portfolio optimization
+- 3.2. **Risk Parity**: Better for risk management
+- 3.3. **Kelly Criterion**: Best for long-term growth
+- 3.4. **Black-Litterman**: Ideal when you have strong market views
+- 3.5. **HRP**: More robust to estimation errors
 
-4. **Regular Rebalancing**:
-   - Set appropriate rebalancing thresholds
-   - Consider transaction costs
-   - Monitor tracking error
+### 4. Portfolio Maintenance
+- 4.1. **Rebalancing Thresholds**: Set appropriate rebalancing thresholds
+- 4.2. **Cost Management**: Consider transaction costs when rebalancing
+- 4.3. **Tracking Error**: Monitor tracking error against benchmarks
 
 ## Common Pitfalls
 
-1. **Overfitting**:
-   - Use sufficient historical data
-   - Consider using rolling windows
-   - Implement out-of-sample testing
+### 1. Estimation Issues
+- 1.1. **Overfitting**: Use sufficient historical data
+- 1.2. **Sample Bias**: Consider using rolling windows
+- 1.3. **Validation**: Implement out-of-sample testing
 
-2. **Estimation Error**:
-   - Use robust estimation methods
-   - Consider shrinkage estimators
-   - Implement proper regularization
+### 2. Statistical Challenges
+- 2.1. **Estimation Error**: Use robust estimation methods
+- 2.2. **Shrinkage**: Consider shrinkage estimators
+- 2.3. **Regularization**: Implement proper regularization
 
-3. **Transaction Costs**:
-   - Account for bid-ask spreads
-   - Consider market impact
-   - Implement turnover constraints
+### 3. Implementation Realities
+- 3.1. **Bid-Ask Spreads**: Account for bid-ask spreads
+- 3.2. **Market Impact**: Consider market impact of trades
+- 3.3. **Turnover Constraints**: Implement turnover constraints

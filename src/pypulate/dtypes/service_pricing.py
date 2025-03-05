@@ -5,7 +5,7 @@ This module provides a unified interface for various pricing calculations by com
 different pricing models from the pricing package.
 """
 
-from typing import List, Dict, Union, Optional, Tuple, Callable
+from typing import List, Dict, Union, Optional, Callable, Any
 import numpy as np
 from datetime import datetime, date
 
@@ -14,6 +14,11 @@ from ..pricing import (
     calculate_subscription_price,
     calculate_usage_price,
     calculate_volume_discount,
+    calculate_peak_pricing,
+    calculate_time_based_price,
+    calculate_bundle_price,
+    calculate_freemium_price,
+    calculate_loyalty_price,
     apply_dynamic_pricing,
     PricingRule
 )
@@ -178,6 +183,147 @@ class ServicePricing:
         self._state['current_pricing']['volume_discount'] = result
         return result
     
+    def calculate_peak_pricing(
+        self,
+        base_price: float,
+        usage_time: str,
+        peak_hours: Dict[str, tuple],
+        peak_multiplier: float = 1.5,
+        off_peak_multiplier: float = 0.8
+    ) -> float:
+        """
+        Calculate price based on peak/off-peak hours.
+        
+        Parameters
+        ----------
+        base_price : float
+            Base price per unit
+        usage_time : str
+            Time of usage (format: "HH:MM")
+        peak_hours : dict
+            Dictionary of weekdays and their peak hours
+            Format: {"monday": ("09:00", "17:00")}
+        peak_multiplier : float, default 1.5
+            Price multiplier during peak hours
+        off_peak_multiplier : float, default 0.8
+            Price multiplier during off-peak hours
+        """
+        result = calculate_peak_pricing(base_price, usage_time, peak_hours, peak_multiplier, off_peak_multiplier)
+        self._state['current_pricing']['peak'] = result
+        return result
+    
+    def calculate_time_based_price(
+        self,
+        base_price: float,
+        duration: float,
+        time_unit: str = 'hour',
+        minimum_duration: float = 1.0,
+        rounding_method: str = 'up'
+    ) -> float:
+        """
+        Calculate price based on time duration.
+        
+        Parameters
+        ----------
+        base_price : float
+            Base price per time unit
+        duration : float
+            Duration of usage
+        time_unit : str
+            Unit of time ('minute', 'hour', 'day')
+        minimum_duration : float
+            Minimum billable duration
+        rounding_method : str
+            How to round partial units ('up', 'down', 'nearest')
+        """
+        result = calculate_time_based_price(base_price, duration, time_unit, minimum_duration, rounding_method)
+        self._state['current_pricing']['time_based'] = result
+        return result
+    
+    def calculate_bundle_price(
+        self,
+        items: List[str],
+        item_prices: Dict[str, float],
+        bundle_discounts: Dict[str, float],
+        minimum_bundle_size: int = 2
+    ) -> float:
+        """
+        Calculate price for bundled items with discounts.
+
+        Parameters
+        ----------
+        items : list
+            List of items in the bundle
+        item_prices : dict
+            Individual prices for each item
+        bundle_discounts : dict
+            Discount rates for different bundle combinations
+        minimum_bundle_size : int, default 2
+            Minimum items required for bundle pricing
+        """
+        result = calculate_bundle_price(items, item_prices, bundle_discounts, minimum_bundle_size)
+        self._state['current_pricing']['bundle'] = result
+        return result
+    
+    def calculate_freemium_price(
+        self,
+        base_features: List[str],
+        premium_features: List[str],
+        feature_usage: Dict[str, float],
+        free_limits: Dict[str, float],
+        overage_rates: Dict[str, float]
+    ) -> float:
+        """
+        Calculate price for freemium model with usage limits.
+        
+        Parameters
+        ----------
+        base_features : list
+            List of free features
+        premium_features : list
+            List of premium features
+        feature_usage : dict
+            Usage metrics for each feature
+        free_limits : dict
+            Usage limits for free tier
+        overage_rates : dict
+            Rates for usage beyond free limits
+        """
+        result = calculate_freemium_price(
+            base_features, premium_features, 
+            feature_usage, free_limits, overage_rates
+        )
+        self._state['current_pricing']['freemium'] = result
+        return result
+    
+    def calculate_loyalty_price(
+        self,
+        base_price: float,
+        customer_tenure: int,
+        loyalty_tiers: Dict[int, float],
+        additional_benefits: Dict[str, float] = {}
+    ) -> Dict[str, Any]:
+        """
+        Calculate price with loyalty discounts and benefits.
+
+        Parameters
+        ----------
+        base_price : float
+            Base price before loyalty benefits
+        customer_tenure : int
+            Customer's tenure in months
+        loyalty_tiers : dict
+            Discount rates for different tenure levels
+        additional_benefits : dict, optional
+            Additional benefits for loyal customers
+        """
+        result = calculate_loyalty_price(
+            base_price, customer_tenure, 
+            loyalty_tiers, additional_benefits
+        )
+        self._state['current_pricing']['loyalty'] = result
+        return result
+    
     def apply_dynamic_pricing(
         self,
         base_price: float,
@@ -288,3 +434,8 @@ class ServicePricing:
                 'pricing': self._state['current_pricing'].copy()
             })
             self._state['current_pricing'] = {} 
+
+    def get_current_pricing(self) -> Dict[str, float]:
+        """Get the current pricing state."""
+        return self._state['current_pricing']
+

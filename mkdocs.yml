@@ -104,6 +104,10 @@ nav:
       - Tiered Pricing: api/service-pricing/tiered-pricing.md
       - Subscription Pricing: api/service-pricing/subscription-pricing.md
       - Usage-Based Pricing: api/service-pricing/usage-based-pricing.md
+      - Time-Based Pricing: api/service-pricing/time-based-pricing.md
+      - Freemium Pricing: api/service-pricing/freemium-pricing.md
+      - Loyalty-Based Pricing: api/service-pricing/loyalty-based-pricing.md
+      - Bundle Pricing: api/service-pricing/bundle-pricing.md
     - Allocation:
       - Optimization: api/optimization.md
   

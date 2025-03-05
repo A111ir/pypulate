@@ -22,7 +22,7 @@ from .dtypes.service_pricing import ServicePricing
 from .dtypes.allocation import Allocation
 
 # Define package metadata
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 __author__ = "Amir Rezaei"
 __email__ = "corvology@gmail.com"
 

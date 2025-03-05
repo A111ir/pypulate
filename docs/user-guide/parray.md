@@ -167,11 +167,21 @@ custom_momentum = (
 
 ## Best Practices
 
-1. **Signal Generation**:
-   - Combine multiple indicators for confirmation
-   - Use proper risk management
-   - Consider time frame alignment
-   - Filter out noise with minimum threshold values
+### 1. Signal Generation
+- 1.1. **Multiple Indicators**: Combine multiple indicators for confirmation
+- 1.2. **Risk Management**: Use proper risk management with every signal
+- 1.3. **Time Frame Alignment**: Consider time frame alignment across indicators
+- 1.4. **Noise Filtering**: Filter out noise with minimum threshold values
+
+### 2. Performance Optimization
+- 2.1. **Memory Management**: Be mindful that method chaining creates intermediate arrays
+- 2.2. **Large Datasets**: For extremely large datasets, consider using underlying functions directly
+- 2.3. **Vectorization**: Leverage NumPy's vectorized operations for better performance
+
+### 3. Analysis Techniques
+- 3.1. **Custom Indicators**: Create custom indicators by combining existing ones
+- 3.2. **Backtesting**: Test strategies on historical data before applying
+- 3.3. **Parameter Optimization**: Test different parameters to find optimal settings
 
 ## Performance Considerations
 

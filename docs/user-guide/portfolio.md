@@ -187,8 +187,22 @@ stored_sharpe = portfolio._state['sharpe_ratio']
 
 ## Best Practices
 
-1. **Data Quality**: Ensure price and return data is clean and properly formatted
-2. **Time Periods**: Use consistent time periods for comparative analysis
-3. **Risk Management**: Regularly monitor risk metrics
-4. **Benchmark Selection**: Choose appropriate benchmarks for relative analysis
-5. **Health Monitoring**: Regularly assess portfolio health 
+### 1. Data Management
+- 1.1. **Data Quality**: Ensure price and return data is clean and properly formatted
+- 1.2. **Time Consistency**: Use consistent time periods for comparative analysis
+- 1.3. **Adjustments**: Account for dividends, splits, and corporate actions
+
+### 2. Risk Assessment
+- 2.1. **Regular Monitoring**: Regularly monitor risk metrics
+- 2.2. **Multiple Metrics**: Use multiple risk measures for comprehensive assessment
+- 2.3. **Stress Testing**: Conduct stress tests under various market scenarios
+
+### 3. Performance Analysis
+- 3.1. **Benchmark Selection**: Choose appropriate benchmarks for relative analysis
+- 3.2. **Attribution**: Analyze sources of returns and risk
+- 3.3. **Health Monitoring**: Regularly assess portfolio health
+
+### 4. Reporting and Communication
+- 4.1. **Clear Visualization**: Present portfolio metrics with clear visualizations
+- 4.2. **Context Provision**: Provide context for performance numbers
+- 4.3. **Consistent Reporting**: Maintain consistent reporting formats 
