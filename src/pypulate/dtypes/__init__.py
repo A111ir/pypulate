@@ -1,14 +1,21 @@
 """
-Custom data types and classes for financial analysis.
+Data types for Pypulate
 
-This module provides custom data types and classes for financial analysis,
-including Parray for price arrays and KPI for business metrics.
+This module provides data types for Pypulate, including Parray, Portfolio, KPI, and ServicePricing.
 """
 
 from .parray import Parray
-from .kpi import KPI
 from .portfolio import Portfolio
-from .allocation import Allocation
+from .kpi import KPI
 from .service_pricing import ServicePricing
+from .allocation import Allocation
+from .credit_scoring import CreditScoring
 
-__all__ = ['Parray', 'KPI', 'Portfolio', 'Allocation', 'ServicePricing']
+__all__ = [
+    'Parray',
+    'Portfolio',
+    'KPI',
+    'ServicePricing',
+    'Allocation',
+    'CreditScoring'
+]

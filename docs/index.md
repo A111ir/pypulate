@@ -167,6 +167,79 @@ pricing.save_current_pricing()
 history = pricing.get_pricing_history()
 ```
 
+### CreditScoring
+
+A comprehensive class for credit risk assessment, scoring, and loan analysis:
+
+```python
+from pypulate.dtypes import CreditScoring
+
+credit = CreditScoring()
+
+# Corporate Bankruptcy Risk Assessment
+z_score = credit.altman_z_score(
+    working_capital=1200000,
+    retained_earnings=1500000,
+    ebit=800000,
+    market_value_equity=5000000,
+    sales=4500000,
+    total_assets=6000000,
+    total_liabilities=2500000
+)
+
+# Default Probability Using Structural Model
+pd_result = credit.merton_model(
+    asset_value=10000000,
+    debt_face_value=5000000,
+    asset_volatility=0.25,
+    risk_free_rate=0.03,
+    time_to_maturity=1.0
+)
+
+# Retail Credit Scoring
+scorecard_result = credit.create_scorecard(
+    features={"age": 35, "income": 75000, "years_employed": 5},
+    weights={"age": 2.5, "income": 3.2, "years_employed": 4.0},
+    scaling_factor=20,
+    base_score=600
+)
+
+# Financial Ratio Analysis
+ratios = credit.financial_ratios(
+    current_assets=2000000,
+    current_liabilities=1200000,
+    total_assets=8000000,
+    total_liabilities=4000000,
+    ebit=1200000,
+    interest_expense=300000,
+    net_income=700000,
+    total_equity=4000000,
+    sales=6000000
+)
+
+# Risk-Based Loan Pricing
+pricing = credit.loan_pricing(
+    loan_amount=250000,
+    term=5,
+    pd=0.03,
+    lgd=0.35,
+    funding_cost=0.04,
+    operating_cost=0.01,
+    capital_requirement=0.08,
+    target_roe=0.15
+)
+
+# Expected Credit Loss Calculation
+ecl = credit.expected_credit_loss(
+    pd=0.05,
+    lgd=0.4,
+    ead=100000
+)
+
+# Model Usage History
+history = credit.get_history()
+```
+
 ## Installation
 
 ```bash
@@ -207,6 +280,17 @@ pip install pypulate
   - Custom pricing rules
   - Pricing history tracking
 
+- **CreditScoring**:
+  - Bankruptcy prediction models
+  - Default probability estimation
+  - Credit scorecard development
+  - Financial ratio analysis
+  - Expected credit loss calculation
+  - Risk-based loan pricing
+  - Credit model validation
+  - Loss given default estimation
+  - Exposure at default calculation
+
 ## User Guide
 
 - [Getting Started](user-guide/getting-started.md)
@@ -214,6 +298,7 @@ pip install pypulate
 - [KPI Guide](user-guide/kpi.md)
 - [Portfolio Guide](user-guide/portfolio.md)
 - [Service Pricing Guide](user-guide/service-pricing.md)
+- [Credit Scoring Guide](user-guide/credit-scoring.md)
 
 
 ## Contributing

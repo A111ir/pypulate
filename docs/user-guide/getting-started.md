@@ -192,6 +192,76 @@ pricing.save_current_pricing()
 history = pricing.get_pricing_history()
 ```
 
+### 6. CreditScoring
+
+The `CreditScoring` class provides comprehensive credit risk assessment and scoring tools:
+
+```python
+from pypulate.dtypes import CreditScoring
+
+# Initialize credit scoring system
+credit = CreditScoring()
+
+# Corporate Credit Risk Assessment
+z_score_result = credit.altman_z_score(
+    working_capital=1200000,
+    retained_earnings=1500000,
+    ebit=800000,
+    market_value_equity=5000000,
+    sales=4500000,
+    total_assets=6000000,
+    total_liabilities=2500000
+)
+print(f"Altman Z-Score: {z_score_result['z_score']:.2f}")
+print(f"Risk Assessment: {z_score_result['risk_assessment']}")
+
+# Default Probability Estimation
+merton_result = credit.merton_model(
+    asset_value=10000000,
+    debt_face_value=5000000,
+    asset_volatility=0.25,
+    risk_free_rate=0.03,
+    time_to_maturity=1.0
+)
+print(f"Probability of Default: {merton_result['probability_of_default']:.2%}")
+
+# Credit Scorecard for Retail Lending
+features = {
+    "age": 35,
+    "income": 75000,
+    "years_employed": 5,
+    "debt_to_income": 0.3,
+    "previous_defaults": 0
+}
+weights = {
+    "age": 2.5,
+    "income": 3.2,
+    "years_employed": 4.0,
+    "debt_to_income": -5.5,
+    "previous_defaults": -25.0
+}
+scorecard_result = credit.create_scorecard(
+    features=features,
+    weights=weights,
+    scaling_factor=20,
+    base_score=600
+)
+print(f"Credit Score: {scorecard_result['total_score']:.0f}")
+print(f"Risk Category: {scorecard_result['risk_category']}")
+
+# Expected Credit Loss Calculation
+ecl_result = credit.expected_credit_loss(
+    pd=0.05,  # Probability of default
+    lgd=0.4,  # Loss given default
+    ead=100000,  # Exposure at default
+    time_horizon=1.0
+)
+print(f"Expected Credit Loss: ${ecl_result['ecl']:.2f}")
+
+# Track Model Usage
+history = credit.get_history()
+```
+
 ## Common Patterns
 
 ### 1. Method Chaining
@@ -241,6 +311,9 @@ stored_risk = portfolio._state['volatility']
 # ServicePricing state
 stored_pricing = pricing._state['current_pricing']
 pricing_history = pricing._state['pricing_history']
+
+# CreditScoring state
+model_history = credit._history  # History of credit model calculations
 ```
 
 ## Next Steps
@@ -251,3 +324,4 @@ Now that you understand the basic components, explore these topics in detail:
 - [KPI Guide](kpi.md): Comprehensive business metrics and health scoring
 - [Portfolio Guide](portfolio.md): Portfolio analysis and risk management
 - [Service Pricing Guide](service-pricing.md): Pricing models and calculations
+- [Credit Scoring Guide](credit-scoring.md): Credit risk assessment and scoring

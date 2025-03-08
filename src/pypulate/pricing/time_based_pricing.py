@@ -22,12 +22,21 @@ def calculate_time_based_price(
         Minimum billable duration
     rounding_method : str
         How to round partial units ('up', 'down', 'nearest')
+
+    Returns
+    -------
+    float
+        Calculated price
+
+    Examples
+    --------
+    >>> calculate_time_based_price(100, 2.5, 'hour')
+    250.0  # 2.5 hours at $100/hour
     """
     if duration < minimum_duration:
         return 0
     
-    # Apply base price according to the time unit
-    # The base_price is already per the specified time unit
+
     if time_unit == 'minute':
         price = base_price * duration
     elif time_unit == 'hour':

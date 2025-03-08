@@ -28,6 +28,12 @@ def calculate_loyalty_price(
         - loyalty_tier: the applicable tier
         - loyalty_discount: discount amount
         - additional_benefits: benefits dictionary
+        
+    Examples
+    --------
+    >>> loyalty_tiers = {1: 0.10, 3: 0.15, 6: 0.20}
+    >>> calculate_loyalty_price(100, 2, loyalty_tiers)
+    {'loyalty_price': 90.0, 'loyalty_tier': 1, 'loyalty_discount': 10.0, 'additional_benefits': {}}
     """
     
     applicable_tier = 0

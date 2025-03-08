@@ -23,6 +23,16 @@ def calculate_peak_pricing(
         Price multiplier during peak hours
     off_peak_multiplier : float, default 0.8
         Price multiplier during off-peak hours
+        
+    Returns
+    -------
+    float
+        Calculated price
+    
+    Examples
+    --------
+    >>> calculate_peak_pricing(100, "10:00", {"monday": ("09:00", "17:00")})
+    150.0  # $100 * 1.5
     """
     usage_hour, usage_minute = map(int, usage_time.split(':'))
     
