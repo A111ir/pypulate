@@ -2,7 +2,7 @@
 
 ![Pypulate Logo](docs/assets/logo.png)
 
-[![PyPI](https://img.shields.io/badge/pypi-v0.2.1-blue)](https://pypi.org/project/pypulate/)
+[![PyPI](https://img.shields.io/badge/pypi-v0.2.2-blue)](https://pypi.org/project/pypulate/)
 ![Python](https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C%203.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Tests](https://img.shields.io/badge/tests-passing-brightgreen)
@@ -51,9 +51,23 @@ Pypulate is a comprehensive Python framework designed for financial analysis, bu
 - Subscription pricing with features
 - Usage-based pricing
 - Dynamic pricing adjustments
+- Freemium pricing
+- Loyalty pricing
 - Volume discounts
 - Custom pricing rules
 - Pricing history tracking
+
+### Credit Scoring
+- Bankruptcy prediction models (Altman Z-Score)
+- Default probability estimation (Merton model)
+- Credit scorecard development
+- Financial ratio analysis
+- Expected credit loss calculation (IFRS 9/CECL)
+- Risk-based loan pricing
+- Credit model validation
+- Loss given default estimation
+- Exposure at default calculation
+- Credit rating transition matrices
 
 ## 🚀 Installation
 
@@ -179,6 +193,52 @@ sub_price = pricing.calculate_subscription_price(
 )
 ```
 
+### Credit Scoring
+```python
+from pypulate.dtypes import CreditScoring
+
+credit = CreditScoring()
+
+# Corporate Credit Risk Assessment
+z_score = credit.altman_z_score(
+    working_capital=1200000,
+    retained_earnings=1500000,
+    ebit=800000,
+    market_value_equity=5000000,
+    sales=4500000,
+    total_assets=6000000,
+    total_liabilities=2500000
+)
+print(f"Altman Z-Score: {z_score['z_score']:.2f}")
+print(f"Risk Assessment: {z_score['risk_assessment']}")
+
+# Retail Credit Scoring
+scorecard_result = credit.create_scorecard(
+    features={
+        "age": 35,
+        "income": 75000,
+        "years_employed": 5,
+        "debt_to_income": 0.3
+    },
+    weights={
+        "age": 2.5,
+        "income": 3.2,
+        "years_employed": 4.0,
+        "debt_to_income": -5.5
+    }
+)
+print(f"Credit Score: {scorecard_result['total_score']:.0f}")
+print(f"Risk Category: {scorecard_result['risk_category']}")
+
+# Expected Credit Loss
+ecl = credit.expected_credit_loss(
+    pd=0.05,  # Probability of default
+    lgd=0.4,  # Loss given default
+    ead=100000  # Exposure at default
+)
+print(f"Expected Credit Loss: ${ecl['ecl']:.2f}")
+```
+
 ## 📊 Key Capabilities
 
 ### Data Analysis
@@ -207,6 +267,15 @@ sub_price = pricing.calculate_subscription_price(
 - Custom rule creation
 - History tracking
 
+### Credit Risk Assessment
+- Bankruptcy prediction
+- Default probability modeling
+- Credit scoring and scorecards
+- Financial ratio analysis
+- Expected credit loss calculation
+- Risk-based loan pricing
+- Credit model validation
+
 ## 📚 Documentation
 
 Comprehensive documentation is available at [https://a111ir.github.io/pypulate](https://a111ir.github.io/pypulate) or in the docs directory:
@@ -217,6 +286,7 @@ Comprehensive documentation is available at [https://a111ir.github.io/pypulate](
 - [Portfolio Guide](https://a111ir.github.io/pypulate/user-guide/portfolio/)
 - [Service Pricing Guide](https://a111ir.github.io/pypulate/user-guide/service-pricing/)
 - [Allocation Guide](https://a111ir.github.io/pypulate/user-guide/allocation/)
+- [Credit Scoring Guide](https://a111ir.github.io/pypulate/user-guide/credit-scoring/)
 
 ## 🤝 Contributing
 

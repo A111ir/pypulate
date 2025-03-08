@@ -1,6 +1,6 @@
 [project]
 name = "pypulate"
-version = "0.2.0"
+version = "0.2.2"
 description = "High-performance financial and business analytics framework for Python"
 readme = "README.md"
 authors = [
@@ -34,14 +34,12 @@ dev = [
     "isort>=5.10.0",
     "mypy>=1.0.0",
 ]
-cuda = [
-    "cupy>=10.0.0",
-]
+
 
 [project.urls]
 "Homepage" = "https://github.com/A111ir/pypulate"
 "Bug Tracker" = "https://github.com/A111ir/pypulate/issues"
-"Documentation" = "https://pypulate.readthedocs.io/"
+"Documentation" = "https://a111ir.github.io/pypulate/"
 
 [tool.pytest]
 testpaths = ["tests"]

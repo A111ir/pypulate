@@ -49,6 +49,8 @@ markdown_extensions:
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.arithmatex:
+      generic: true
 
 plugins:
   - search
@@ -79,6 +81,21 @@ nav:
     - Service Pricing: user-guide/service-pricing.md
     - Portfolio: user-guide/portfolio.md
     - Allocation: user-guide/allocation.md
+    - Credit: user-guide/credit-scoring.md
+    - Credit Scoring:
+      - Altman Z-Score: user-guide/credit/altman_zscore.md
+      - Scoring Model Validation: user-guide/credit/scoring_model_validation.md
+      - Scorecard: user-guide/credit/scorecard.md
+      - Debt Service Coverage Ratio: user-guide/credit/debt_service_coverage_ratio.md
+      - Expected Credit Loss: user-guide/credit/expected_credit_loss.md
+      - Exposure at Default: user-guide/credit/exposure_at_default.md
+      - Financial Ratios: user-guide/credit/financial_ratios.md
+      - Loan Pricing: user-guide/credit/loan_pricing.md
+      - Logistic Regression Score: user-guide/credit/logistic_regression_score.md
+      - Loss Given Default: user-guide/credit/loss_given_default.md
+      - Merton Model: user-guide/credit/merton_model.md
+      - Transition Matrix: user-guide/credit/transition_matrix.md
+      - Weight of Evidence: user-guide/credit/weight_of_evidence.md
     - Technical Analysis: user-guide/technical.md
     - Moving Averages: user-guide/moving-averages.md
     - Transforms: user-guide/transforms.md
@@ -110,6 +127,20 @@ nav:
       - Bundle Pricing: api/service-pricing/bundle-pricing.md
     - Allocation:
       - Optimization: api/optimization.md
+    - Credit:
+      - Altman Z-Score: api/credit/altman_z_score.md
+      - Scoring Model Validation: api/credit/scoring_model_validation.md
+      - Scorecard: api/credit/create_scorecard.md
+      - Debt Service Coverage Ratio: api/credit/debt_service_coverage_ratio.md
+      - Expected Credit Loss: api/credit/expected_credit_loss.md
+      - Exposure at Default: api/credit/exposure_at_default.md
+      - Financial Ratios: api/credit/financial_ratios.md
+      - Loan Pricing: api/credit/loan_pricing.md
+      - Logistic Regression Score: api/credit/logistic_regression_score.md
+      - Loss Given Default: api/credit/loss_given_default.md
+      - Merton Model: api/credit/merton_model.md
+      - Transition Matrix: api/credit/transition_matrix.md
+      - Weight of Evidence: api/credit/weight_of_evidence.md
   
 
     
