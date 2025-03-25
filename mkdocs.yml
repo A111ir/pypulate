@@ -26,7 +26,7 @@ theme:
   features:
     - navigation.instant
     - navigation.tracking
-    - navigation.expand
+    - navigation.sections
     - navigation.indexes
     - content.code.copy
     - content.code.annotate
@@ -70,6 +70,18 @@ extra:
       link: https://github.com/A111ir/pypulate
     - icon: fontawesome/brands/python
       link: https://pypi.org/project/pypulate/
+  version:
+    provider: mike
+  collapse_single_pages: true
+  navigation_depth: 4
+  nav_sections:
+    User Guide: true
+    API Reference: false
+    Home: false
+    Installation: false
+    Contributing: false
+    Changelog: false
+    License: false
 
 nav:
   - Home: index.md
@@ -77,8 +89,7 @@ nav:
   - User Guide:
     - Getting Started: user-guide/getting-started.md
     - Parray: user-guide/parray.md
-    - KPIs: user-guide/kpi.md
-    - Service Pricing: user-guide/service-pricing.md
+    - Preprocessing: user-guide/preprocessing.md
     - Portfolio: user-guide/portfolio.md
     - Allocation: user-guide/allocation.md
     - Credit: user-guide/credit-scoring.md
@@ -96,6 +107,20 @@ nav:
       - Merton Model: user-guide/credit/merton_model.md
       - Transition Matrix: user-guide/credit/transition_matrix.md
       - Weight of Evidence: user-guide/credit/weight_of_evidence.md
+    - Asset Pricing:
+      - APT: user-guide/asset/apt.md
+      - Binomial Tree: user-guide/asset/binomial_tree.md
+      - Black-Scholes: user-guide/asset/black_scholes.md
+      - Bond Pricing: user-guide/asset/bond_pricing.md
+      - CAPM: user-guide/asset/capm.md
+      - Fama-French Models: user-guide/asset/fama_french.md
+      - Mean Inversion Pricing: user-guide/asset/mean_inversion.md
+      - Monte Carlo: user-guide/asset/monte_carlo.md
+      - Risk-Neutral Valuation: user-guide/asset/risk_neutral.md
+      - Term Structure: user-guide/asset/term_structure.md
+      - Yield Curve: user-guide/asset/yield_curve.md
+    - KPIs: user-guide/kpi.md
+    - Service Pricing: user-guide/service-pricing.md
     - Technical Analysis: user-guide/technical.md
     - Moving Averages: user-guide/moving-averages.md
     - Transforms: user-guide/transforms.md
@@ -103,16 +128,21 @@ nav:
     
   - API Reference:
     - Parray:
-      - Moving Averages: api/moving_averages.md
+      - Parray: api/parray/parray.md
+      - Preprocessing: api/parray/preprocessing.md
+      - Statistics: api/parray/statistics.md
+      - Moving Averages: api/parray/moving_averages.md
       - Technical:
-        - Momentum: api/technical/momentum.md
-        - Volatility: api/technical/volatility.md
-        - Utils: api/technical/utils.md
-      - Transforms: api/transforms.md
-      - Filters: api/filters.md
+        - Momentum: api/parray/technical/momentum.md
+        - Volatility: api/parray/technical/volatility.md
+        - Utils: api/parray/technical/utils.md
+      - Transforms: api/parray/transforms.md
+      - Filters: api/parray/filters.md
     - KPI:
-      - Business KPIs: api/business-kpis.md
+      - KPIs: api/kpi/kpi.md
+      - Business KPIs: api/kpi/business_kpi.md
     - Portfolio:
+      - Portfolio: api/portfolio/portfolio.md
       - Return Measurement: api/portfolio/return_measurement.md
       - Risk-Adjusted Performance: api/portfolio/risk_adjusted.md
       - Risk Measurement: api/portfolio/risk_measurement.md
@@ -125,8 +155,10 @@ nav:
       - Freemium Pricing: api/service-pricing/freemium-pricing.md
       - Loyalty-Based Pricing: api/service-pricing/loyalty-based-pricing.md
       - Bundle Pricing: api/service-pricing/bundle-pricing.md
+      - Peak Pricing: api/service-pricing/peak-pricing.md
     - Allocation:
-      - Optimization: api/optimization.md
+      - Allocation: api/allocation/allocation.md
+      - Optimization: api/allocation/optimization.md
     - Credit:
       - Altman Z-Score: api/credit/altman_z_score.md
       - Scoring Model Validation: api/credit/scoring_model_validation.md
@@ -141,6 +173,18 @@ nav:
       - Merton Model: api/credit/merton_model.md
       - Transition Matrix: api/credit/transition_matrix.md
       - Weight of Evidence: api/credit/weight_of_evidence.md
+    - Asset Pricing: 
+      - Arbitrage Pricing Theory (APT): api/asset/apt.md
+      - Binomial Tree: api/asset/binomial_tree.md
+      - Black-Scholes: api/asset/black_scholes.md
+      - Bond Pricing: api/asset/bond_pricing.md
+      - Capital Asset Pricing Model (CAPM): api/asset/capm.md
+      - Fama-French Models: api/asset/fama_french.md
+      - Mean Inversion Pricing: api/asset/mean_inversion.md
+      - Monte Carlo: api/asset/monte_carlo.md
+      - Risk-Neutral Pricing: api/asset/risk_neutral.md
+      - Term Structure: api/asset/term_structure.md
+      - Yield Curve: api/asset/yield_curve.md
   
 
     

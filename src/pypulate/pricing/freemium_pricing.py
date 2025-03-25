@@ -27,16 +27,6 @@ def calculate_freemium_price(
     -------
     float
         Calculated price
-
-    Examples
-    --------
-    >>> base_features = ['feature1', 'feature2']
-    >>> premium_features = ['feature3', 'feature4']
-    >>> feature_usage = {'feature1': 10, 'feature2': 5, 'feature3': 3, 'feature4': 2}
-    >>> free_limits = {'feature1': 10, 'feature2': 5}
-    >>> overage_rates = {'feature1': 1.0, 'feature2': 0.5, 'feature3': 2.0, 'feature4': 1.5}
-    >>> calculate_freemium_price(base_features, premium_features, feature_usage, free_limits, overage_rates)
-    9.0
     """
     total_price = 0.0
     for feature in base_features:

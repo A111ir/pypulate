@@ -6,16 +6,17 @@ for financial time series data.
 """
 
 import numpy as np
-from typing import Tuple, Optional, Union, Callable
+from numpy.typing import NDArray, ArrayLike
+from typing import Tuple, Optional, Union
 from scipy import signal
 
 def butterworth_filter(
-    data: np.ndarray,
+    data: ArrayLike,
     cutoff: Union[float, Tuple[float, float]],
     order: int = 4,
     filter_type: str = 'lowpass',
     fs: float = 1.0
-) -> np.ndarray:
+) -> NDArray[np.float64]:
     """
     Apply a Butterworth filter to a time series.
     
@@ -24,7 +25,7 @@ def butterworth_filter(
     
     Parameters
     ----------
-    data : np.ndarray
+    data : array_like
         Input time series data
     cutoff : float or tuple of float
         Cutoff frequency. For lowpass and highpass, this is a scalar.
@@ -52,7 +53,7 @@ def butterworth_filter(
     >>> filtered = butterworth_filter(signal, cutoff=0.1, filter_type='lowpass', fs=1.0)
     """
     # Convert to numpy array if not already
-    data = np.asarray(data)
+    data_array = np.asarray(data, dtype=np.float64)
     
     # Normalize cutoff frequency
     nyquist = 0.5 * fs
@@ -65,19 +66,19 @@ def butterworth_filter(
     b, a = signal.butter(order, cutoff, btype=filter_type)
     
     # Apply filter
-    filtered_data = signal.filtfilt(b, a, data)
+    filtered_data = signal.filtfilt(b, a, data_array)
     
     return filtered_data
 
 def chebyshev_filter(
-    data: np.ndarray,
+    data: ArrayLike,
     cutoff: Union[float, Tuple[float, float]],
     order: int = 4,
     ripple: float = 1.0,
     filter_type: str = 'lowpass',
     fs: float = 1.0,
     type_num: int = 1
-) -> np.ndarray:
+) -> NDArray[np.float64]:
     """
     Apply a Chebyshev filter to a time series.
     
@@ -86,7 +87,7 @@ def chebyshev_filter(
     
     Parameters
     ----------
-    data : np.ndarray
+    data : array_like
         Input time series data
     cutoff : float or tuple of float
         Cutoff frequency. For lowpass and highpass, this is a scalar.
@@ -118,7 +119,7 @@ def chebyshev_filter(
     >>> filtered = chebyshev_filter(signal, cutoff=0.1, ripple=0.5, type_num=1)
     """
     # Convert to numpy array if not already
-    data = np.asarray(data)
+    data_array = np.asarray(data, dtype=np.float64)
     
     # Normalize cutoff frequency
     nyquist = 0.5 * fs
@@ -134,17 +135,17 @@ def chebyshev_filter(
         b, a = signal.cheby2(order, ripple, cutoff, btype=filter_type)
     
     # Apply filter
-    filtered_data = signal.filtfilt(b, a, data)
+    filtered_data = signal.filtfilt(b, a, data_array)
     
     return filtered_data
 
 def savitzky_golay_filter(
-    data: np.ndarray,
+    data: ArrayLike,
     window_length: int = 11,
     polyorder: int = 3,
     deriv: int = 0,
     delta: float = 1.0
-) -> np.ndarray:
+) -> NDArray[np.float64]:
     """
     Apply a Savitzky-Golay filter to a time series.
     
@@ -154,7 +155,7 @@ def savitzky_golay_filter(
     
     Parameters
     ----------
-    data : np.ndarray
+    data : array_like
         Input time series data
     window_length : int, default 11
         Length of the filter window (must be odd)
@@ -181,22 +182,22 @@ def savitzky_golay_filter(
     >>> filtered = savitzky_golay_filter(signal, window_length=11, polyorder=3)
     """
     # Convert to numpy array if not already
-    data = np.asarray(data)
+    data_array = np.asarray(data, dtype=np.float64)
     
     # Ensure window_length is odd
     if window_length % 2 == 0:
         window_length += 1
     
     # Apply filter
-    filtered_data = signal.savgol_filter(data, window_length, polyorder, deriv=deriv, delta=delta)
+    filtered_data = signal.savgol_filter(data_array, window_length, polyorder, deriv=deriv, delta=delta)
     
     return filtered_data
 
 def wiener_filter(
-    data: np.ndarray,
+    data: ArrayLike,
     mysize: Union[int, Tuple[int, ...]] = 3,
     noise: Optional[float] = None
-) -> np.ndarray:
+) -> NDArray[np.float64]:
     """
     Apply a Wiener filter to a time series.
     
@@ -205,7 +206,7 @@ def wiener_filter(
     
     Parameters
     ----------
-    data : np.ndarray
+    data : array_like
         Input time series data
     mysize : int or tuple of int, default 3
         Size of the filter window
@@ -228,17 +229,17 @@ def wiener_filter(
     >>> filtered = wiener_filter(signal, mysize=5)
     """
     # Convert to numpy array if not already
-    data = np.asarray(data)
+    data_array = np.asarray(data, dtype=np.float64)
     
     # Apply filter
-    filtered_data = signal.wiener(data, mysize=mysize, noise=noise)
+    filtered_data = signal.wiener(data_array, mysize=mysize, noise=noise)
     
     return filtered_data
 
 def median_filter(
-    data: np.ndarray,
+    data: ArrayLike,
     kernel_size: int = 3
-) -> np.ndarray:
+) -> NDArray[np.float64]:
     """
     Apply a median filter to a time series.
     
@@ -247,7 +248,7 @@ def median_filter(
     
     Parameters
     ----------
-    data : np.ndarray
+    data : array_like
         Input time series data
     kernel_size : int, default 3
         Size of the filter kernel
@@ -270,18 +271,18 @@ def median_filter(
     >>> filtered = median_filter(signal, kernel_size=5)
     """
     # Convert to numpy array if not already
-    data = np.asarray(data)
+    data_array = np.asarray(data, dtype=np.float64)
     
     # Apply filter
-    filtered_data = signal.medfilt(data, kernel_size=kernel_size)
+    filtered_data = signal.medfilt(data_array, kernel_size=kernel_size)
     
     return filtered_data
 
 def hampel_filter(
-    data: np.ndarray,
+    data: ArrayLike,
     window_size: int = 5,
     n_sigmas: float = 3.0
-) -> np.ndarray:
+) -> NDArray[np.float64]:
     """
     Apply a Hampel filter to a time series.
     
@@ -290,7 +291,7 @@ def hampel_filter(
     
     Parameters
     ----------
-    data : np.ndarray
+    data : array_like
         Input time series data
     window_size : int, default 5
         Size of the window (number of points on each side of the current point)
@@ -315,11 +316,11 @@ def hampel_filter(
     >>> filtered = hampel_filter(signal, window_size=5, n_sigmas=3.0)
     """
     # Convert to numpy array if not already
-    data = np.asarray(data)
-    n = len(data)
+    data_array = np.asarray(data, dtype=np.float64)
+    n = len(data_array)
     
     # Create output array
-    filtered_data = data.copy()
+    filtered_data = data_array.copy()
     
     # Apply Hampel filter
     for i in range(n):
@@ -328,7 +329,7 @@ def hampel_filter(
         end = min(n, i + window_size + 1)
         
         # Get window values
-        window = data[start:end]
+        window = data_array[start:end]
         
         # Calculate median and MAD
         median_val = np.median(window)
@@ -338,15 +339,15 @@ def hampel_filter(
         sigma = 1.4826 * mad
         
         # Check if the point is an outlier
-        if np.abs(data[i] - median_val) > n_sigmas * sigma:
+        if np.abs(data_array[i] - median_val) > n_sigmas * sigma:
             filtered_data[i] = median_val
     
     return filtered_data
 
 def hodrick_prescott_filter(
-    data: np.ndarray,
+    data: ArrayLike,
     lambda_param: float = 1600.0
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> Tuple[NDArray[np.float64], NDArray[np.float64]]:
     """
     Apply the Hodrick-Prescott filter to decompose a time series into trend and cycle components.
     
@@ -355,7 +356,7 @@ def hodrick_prescott_filter(
     
     Parameters
     ----------
-    data : np.ndarray
+    data : array_like
         Input time series data
     lambda_param : float, default 1600.0
         Smoothing parameter. The larger the value, the smoother the trend component
@@ -378,31 +379,31 @@ def hodrick_prescott_filter(
     >>> trend_component, cycle_component = hodrick_prescott_filter(data, lambda_param=100)
     """
     # Convert to numpy array if not already
-    data = np.asarray(data)
-    n = len(data)
+    data_array = np.asarray(data, dtype=np.float64)
+    n = len(data_array)
     
     # Create the second difference matrix
-    D = np.zeros((n-2, n))
+    D = np.zeros((n-2, n), dtype=np.float64)
     for i in range(n-2):
         D[i, i] = 1
         D[i, i+1] = -2
         D[i, i+2] = 1
     
     # Calculate trend component
-    I = np.eye(n)
-    trend = np.linalg.solve(I + lambda_param * D.T @ D, data)
+    I = np.eye(n, dtype=np.float64)
+    trend = np.linalg.solve(I + lambda_param * D.T @ D, data_array)
     
     # Calculate cycle component
-    cycle = data - trend
+    cycle = data_array - trend
     
     return trend, cycle
 
 def baxter_king_filter(
-    data: np.ndarray,
+    data: ArrayLike,
     low: float = 6,
     high: float = 32,
     K: int = 12
-) -> np.ndarray:
+) -> NDArray[np.float64]:
     """
     Apply the Baxter-King bandpass filter to extract business cycle components.
     
@@ -411,7 +412,7 @@ def baxter_king_filter(
     
     Parameters
     ----------
-    data : np.ndarray
+    data : array_like
         Input time series data
     low : float, default 6
         Minimum period of oscillations (in number of observations)
@@ -440,15 +441,15 @@ def baxter_king_filter(
     >>> cycle = baxter_king_filter(data, low=8, high=32, K=12)
     """
     # Convert to numpy array if not already
-    data = np.asarray(data)
-    n = len(data)
+    data_array = np.asarray(data, dtype=np.float64)
+    n = len(data_array)
     
     # Convert periods to frequencies
     low_freq = 2 * np.pi / high
     high_freq = 2 * np.pi / low
     
     # Create filter weights
-    a = np.zeros(2*K+1)
+    a = np.zeros(2*K+1, dtype=np.float64)
     a[K] = (high_freq - low_freq) / np.pi
     for i in range(1, K+1):
         a[K+i] = (np.sin(high_freq * i) - np.sin(low_freq * i)) / (np.pi * i)
@@ -458,9 +459,9 @@ def baxter_king_filter(
     a -= np.mean(a)
     
     # Apply filter
-    filtered_data = np.zeros(n)
+    filtered_data = np.zeros(n, dtype=np.float64)
     for i in range(K, n-K):
-        filtered_data[i] = np.sum(a * data[i-K:i+K+1])
+        filtered_data[i] = np.sum(a * data_array[i-K:i+K+1])
     
     # Set NaN for the K first and last observations
     filtered_data[:K] = np.nan

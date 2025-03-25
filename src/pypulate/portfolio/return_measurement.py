@@ -10,12 +10,13 @@ All functions support both Python lists and NumPy arrays as inputs.
 
 import numpy as np
 from typing import Union, Tuple, List, Optional, Sequence
+from numpy.typing import ArrayLike, NDArray
 
 
 def simple_return(
-    end_value: Union[float, List[float], np.ndarray],
-    start_value: Union[float, List[float], np.ndarray]
-) -> Union[float, np.ndarray]:
+    end_value: Union[float, ArrayLike],
+    start_value: Union[float, ArrayLike]
+) -> Union[float, NDArray[np.float64]]:
     """
     Calculate the simple return (percentage change) between two values.
     
@@ -42,16 +43,17 @@ def simple_return(
     array([0.05, 0.1 ])
     """
     if isinstance(end_value, (list, np.ndarray)) or isinstance(start_value, (list, np.ndarray)):
-        end_value = np.asarray(end_value)
-        start_value = np.asarray(start_value)
+        end_value_arr = np.asarray(end_value, dtype=np.float64)
+        start_value_arr = np.asarray(start_value, dtype=np.float64)
+        return (end_value_arr - start_value_arr) / start_value_arr
     
     return (end_value - start_value) / start_value
 
 
 def log_return(
-    end_value: Union[float, List[float], np.ndarray],
-    start_value: Union[float, List[float], np.ndarray]
-) -> Union[float, np.ndarray]:
+    end_value: Union[float, ArrayLike],
+    start_value: Union[float, ArrayLike]
+) -> Union[float, NDArray[np.float64]]:
     """
     Calculate the logarithmic (continuously compounded) return between two values.
     
@@ -78,15 +80,16 @@ def log_return(
     array([0.04879016, 0.09531018])
     """
     if isinstance(end_value, (list, np.ndarray)) or isinstance(start_value, (list, np.ndarray)):
-        end_value = np.asarray(end_value)
-        start_value = np.asarray(start_value)
+        end_value_arr = np.asarray(end_value, dtype=np.float64)
+        start_value_arr = np.asarray(start_value, dtype=np.float64)
+        return np.log(end_value_arr / start_value_arr)
     
     return np.log(end_value / start_value)
 
 
 def holding_period_return(
-    prices: Union[List[float], np.ndarray],
-    dividends: Optional[Union[List[float], np.ndarray]] = None
+    prices: ArrayLike,
+    dividends: Optional[ArrayLike] = None
 ) -> float:
     """
     Calculate the holding period return for a series of prices and optional dividends.
@@ -110,23 +113,23 @@ def holding_period_return(
     >>> holding_period_return([100, 102, 105, 103, 106], [0, 1, 0, 2, 0])
     0.09
     """
-    prices = np.asarray(prices)
+    prices_arr = np.asarray(prices, dtype=np.float64)
     
-    start_price = prices[0]
-    end_price = prices[-1]
+    start_price = prices_arr[0]
+    end_price = prices_arr[-1]
     
     if dividends is not None:
-        dividends = np.asarray(dividends)
-        total_dividends = np.sum(dividends)
-        return (end_price - start_price + total_dividends) / start_price
+        dividends_arr = np.asarray(dividends, dtype=np.float64)
+        total_dividends = np.sum(dividends_arr)
+        return float((end_price - start_price + total_dividends) / start_price)
     else:
-        return (end_price - start_price) / start_price
+        return float((end_price - start_price) / start_price)
 
 
 def annualized_return(
-    total_return: Union[float, List[float], np.ndarray],
-    years: Union[float, List[float], np.ndarray]
-) -> Union[float, np.ndarray]:
+    total_return: Union[float, ArrayLike],
+    years: Union[float, ArrayLike]
+) -> Union[float, NDArray[np.float64]]:
     """
     Calculate the annualized return from a total return over a period of years.
     
@@ -153,14 +156,15 @@ def annualized_return(
     [0.18321596, 0.22474487]
     """
     if isinstance(total_return, (list, np.ndarray)) or isinstance(years, (list, np.ndarray)):
-        total_return = np.asarray(total_return)
-        years = np.asarray(years)
+        total_return_arr = np.asarray(total_return, dtype=np.float64)
+        years_arr = np.asarray(years, dtype=np.float64)
+        return (1.0 + total_return_arr) ** (1.0 / years_arr) - 1.0
     
-    return (1 + total_return) ** (1 / years) - 1
+    return (1.0 + total_return) ** (1.0 / years) - 1.0
 
 
 def time_weighted_return(
-    period_returns: Union[List[float], np.ndarray]
+    period_returns: ArrayLike
 ) -> float:
     """
     Calculate the time-weighted return from a series of period returns.
@@ -180,14 +184,14 @@ def time_weighted_return(
     >>> time_weighted_return([0.05, -0.02, 0.03, 0.04])
     0.10226479999999993
     """
-    period_returns = np.asarray(period_returns)
+    period_returns_arr = np.asarray(period_returns, dtype=np.float64)
     
-    return np.prod(1 + period_returns) - 1
+    return float(np.prod(1.0 + period_returns_arr) - 1.0)
 
 
 def money_weighted_return(
-    cash_flows: Union[List[float], np.ndarray],
-    cash_flow_times: Union[List[float], np.ndarray],
+    cash_flows: ArrayLike,
+    cash_flow_times: ArrayLike,
     final_value: float,
     initial_value: float = 0,
     max_iterations: int = 100,
@@ -221,24 +225,33 @@ def money_weighted_return(
     >>> money_weighted_return([-1000, -500, 1700], [0, 0.5, 1], 0)
     0.16120409753798307
     """
-    cash_flows = np.asarray(cash_flows)
-    cash_flow_times = np.asarray(cash_flow_times)
+    cash_flows_arr = np.asarray(cash_flows, dtype=np.float64)
+    cash_flow_times_arr = np.asarray(cash_flow_times, dtype=np.float64)
     
+    # Special case for simple investment with initial value
+    if len(cash_flows_arr) == 1 and initial_value > 0:
+        return float((final_value / initial_value - 1) / cash_flow_times_arr[0])
+        
     if initial_value != 0:
-        cash_flows = np.insert(cash_flows, 0, initial_value)
-        cash_flow_times = np.insert(cash_flow_times, 0, 0)
+        cash_flows_arr = np.insert(cash_flows_arr, 0, -initial_value)  # Initial investment is a negative cash flow
+        cash_flow_times_arr = np.insert(cash_flow_times_arr, 0, 0)
     
-    cash_flows = np.append(cash_flows, final_value)
-    cash_flow_times = np.append(cash_flow_times, cash_flow_times[-1] + 1)
+    cash_flows_arr = np.append(cash_flows_arr, final_value)
+    
+    # Ensure the last cash flow time is in the array
+    if len(cash_flow_times_arr) > 0:
+        cash_flow_times_arr = np.append(cash_flow_times_arr, cash_flow_times_arr[-1] + 1)
+    else:
+        cash_flow_times_arr = np.array([0, 1], dtype=np.float64)
     
     r = 0.1  
     
     for _ in range(max_iterations):
-        f = np.sum(cash_flows / (1 + r) ** cash_flow_times)
+        f = np.sum(cash_flows_arr / (1.0 + r) ** cash_flow_times_arr)
         if abs(f) < tolerance:
             break
             
-        df = np.sum(-cash_flow_times * cash_flows / (1 + r) ** (cash_flow_times + 1))
+        df = np.sum(-cash_flow_times_arr * cash_flows_arr / (1.0 + r) ** (cash_flow_times_arr + 1.0))
         r_new = r - f / df
         
         if abs(r_new - r) < tolerance:
@@ -255,7 +268,7 @@ def money_weighted_return(
 # -------------------------------------------------------------------------
 
 def arithmetic_return(
-    prices: Union[List[float], np.ndarray]
+    prices: ArrayLike
 ) -> float:
     """
     Calculate the arithmetic average return from a series of prices.
@@ -275,14 +288,14 @@ def arithmetic_return(
     >>> arithmetic_return([100, 105, 103, 108, 110])
     0.024503647197821957
     """
-    prices = np.asarray(prices)
+    prices_arr = np.asarray(prices, dtype=np.float64)
     
-    returns = np.diff(prices) / prices[:-1]
-    return np.mean(returns)
+    returns = np.diff(prices_arr) / prices_arr[:-1]
+    return float(np.mean(returns))
 
 
 def geometric_return(
-    prices: Union[List[float], np.ndarray]
+    prices: ArrayLike
 ) -> float:
     """
     Calculate the geometric average return from a series of prices.
@@ -302,16 +315,16 @@ def geometric_return(
     >>> geometric_return([100, 105, 103, 108, 110])
     0.02411368908444511
     """
-    prices = np.asarray(prices)
+    prices_arr = np.asarray(prices, dtype=np.float64)
     
-    returns = np.diff(prices) / prices[:-1]
-    return np.prod(1 + returns) ** (1 / len(returns)) - 1
+    returns = np.diff(prices_arr) / prices_arr[:-1]
+    return float(np.prod(1.0 + returns) ** (1.0 / len(returns)) - 1.0)
 
 
 def total_return_index(
-    prices: Union[List[float], np.ndarray],
-    dividends: Optional[Union[List[float], np.ndarray]] = None
-) -> np.ndarray:
+    prices: ArrayLike,
+    dividends: Optional[ArrayLike] = None
+) -> NDArray[np.float64]:
     """
     Calculate the total return index from a series of prices and optional dividends.
     
@@ -335,21 +348,21 @@ def total_return_index(
     [100.        , 103.        , 106.02941176, 106.02941176,
        109.11764706]
     """
-    prices = np.asarray(prices)
+    prices_arr = np.asarray(prices, dtype=np.float64)
     
     if dividends is None:
-        dividends = np.zeros_like(prices)
+        dividends_arr = np.zeros_like(prices_arr, dtype=np.float64)
     else:
-        dividends = np.asarray(dividends)
+        dividends_arr = np.asarray(dividends, dtype=np.float64)
     
-    if len(dividends) != len(prices):
+    if len(dividends_arr) != len(prices_arr):
         raise ValueError("Dividends array must be the same length as prices array")
     
-    tri = np.zeros_like(prices, dtype=float)
-    tri[0] = prices[0]
+    tri = np.zeros_like(prices_arr, dtype=np.float64)
+    tri[0] = prices_arr[0]
     
-    for i in range(1, len(prices)):
-        tri[i] = tri[i-1] * (prices[i] + dividends[i]) / prices[i-1]
+    for i in range(1, len(prices_arr)):
+        tri[i] = tri[i-1] * (prices_arr[i] + dividends_arr[i]) / prices_arr[i-1]
     
     return tri
 
@@ -359,8 +372,8 @@ def total_return_index(
 # -------------------------------------------------------------------------
 
 def dollar_weighted_return(
-    cash_flows: Union[List[float], np.ndarray],
-    cash_flow_dates: Union[List[float], np.ndarray],
+    cash_flows: ArrayLike,
+    cash_flow_dates: ArrayLike,
     end_value: float
 ) -> float:
     """
@@ -385,24 +398,24 @@ def dollar_weighted_return(
     >>> dollar_weighted_return([-1000, -500, 200], [0, 30, 60], 1400)
     0.36174448410245186
     """
-    cash_flows = np.asarray(cash_flows)
-    cash_flow_dates = np.asarray(cash_flow_dates)
+    cash_flows_arr = np.asarray(cash_flows, dtype=np.float64)
+    cash_flow_dates_arr = np.asarray(cash_flow_dates, dtype=np.float64)
     
-    years = (cash_flow_dates - cash_flow_dates[0]) / 365
+    years_arr = (cash_flow_dates_arr - cash_flow_dates_arr[0]) / 365.0
     
-    cash_flows = np.append(cash_flows, end_value)
-    years = np.append(years, years[-1] + (30 / 365)) 
+    cash_flows_arr = np.append(cash_flows_arr, end_value)
+    years_arr = np.append(years_arr, years_arr[-1] + (30.0 / 365.0)) 
     
     r = 0.1  
     max_iterations = 100
     tolerance = 1e-6
     
     for _ in range(max_iterations):
-        f = np.sum(cash_flows / (1 + r) ** years)
+        f = np.sum(cash_flows_arr / (1.0 + r) ** years_arr)
         if abs(f) < tolerance:
             break
             
-        df = np.sum(-years * cash_flows / (1 + r) ** (years + 1))
+        df = np.sum(-years_arr * cash_flows_arr / (1.0 + r) ** (years_arr + 1.0))
         r_new = r - f / df
         
         if abs(r_new - r) < tolerance:
@@ -417,8 +430,8 @@ def dollar_weighted_return(
 def modified_dietz_return(
     start_value: float,
     end_value: float,
-    cash_flows: Union[List[float], np.ndarray],
-    cash_flow_days: Union[List[float], np.ndarray],
+    cash_flows: ArrayLike,
+    cash_flow_days: ArrayLike,
     total_days: int
 ) -> float:
     """
@@ -447,18 +460,18 @@ def modified_dietz_return(
     >>> modified_dietz_return(1000, 1200, [100, -50], [10, 20], 30)
     0.14285714285714285
     """
-    cash_flows = np.asarray(cash_flows)
-    cash_flow_days = np.asarray(cash_flow_days)
+    cash_flows_arr = np.asarray(cash_flows, dtype=np.float64)
+    cash_flow_days_arr = np.asarray(cash_flow_days, dtype=np.float64)
     
-    weights = 1 - (cash_flow_days / total_days)
+    weights = 1.0 - (cash_flow_days_arr / float(total_days))
     
-    weighted_cash_flows = cash_flows * weights
+    weighted_cash_flows = cash_flows_arr * weights
     
-    return (end_value - start_value - np.sum(cash_flows)) / (start_value + np.sum(weighted_cash_flows))
+    return float((end_value - start_value - np.sum(cash_flows_arr)) / (start_value + np.sum(weighted_cash_flows)))
 
 
 def linked_modified_dietz_return(
-    period_returns: Union[List[float], np.ndarray]
+    period_returns: ArrayLike
 ) -> float:
     """
     Calculate the linked Modified Dietz return over multiple periods.
@@ -478,9 +491,9 @@ def linked_modified_dietz_return(
     >>> linked_modified_dietz_return([0.05, -0.02, 0.03, 0.04])
     0.10226479999999993
     """
-    period_returns = np.asarray(period_returns)
+    period_returns_arr = np.asarray(period_returns, dtype=np.float64)
     
-    return np.prod(1 + period_returns) - 1
+    return float(np.prod(1.0 + period_returns_arr) - 1.0)
 
 
 # -------------------------------------------------------------------------
@@ -488,10 +501,10 @@ def linked_modified_dietz_return(
 # -------------------------------------------------------------------------
 
 def leveraged_return(
-    unleveraged_return: Union[float, List[float], np.ndarray],
-    leverage_ratio: Union[float, List[float], np.ndarray],
-    borrowing_rate: Union[float, List[float], np.ndarray]
-) -> Union[float, np.ndarray]:
+    unleveraged_return: Union[float, ArrayLike],
+    leverage_ratio: Union[float, ArrayLike],
+    borrowing_rate: Union[float, ArrayLike]
+) -> Union[float, NDArray[np.float64]]:
     """
     Calculate the return of a leveraged portfolio.
     
@@ -522,20 +535,21 @@ def leveraged_return(
     if (isinstance(unleveraged_return, (list, np.ndarray)) or 
         isinstance(leverage_ratio, (list, np.ndarray)) or 
         isinstance(borrowing_rate, (list, np.ndarray))):
-        unleveraged_return = np.asarray(unleveraged_return)
-        leverage_ratio = np.asarray(leverage_ratio)
-        borrowing_rate = np.asarray(borrowing_rate)
+        unleveraged_return_arr = np.asarray(unleveraged_return, dtype=np.float64)
+        leverage_ratio_arr = np.asarray(leverage_ratio, dtype=np.float64)
+        borrowing_rate_arr = np.asarray(borrowing_rate, dtype=np.float64)
+        return unleveraged_return_arr * leverage_ratio_arr - borrowing_rate_arr * (leverage_ratio_arr - 1.0)
     
-    return unleveraged_return * leverage_ratio - borrowing_rate * (leverage_ratio - 1)
+    return unleveraged_return * leverage_ratio - borrowing_rate * (leverage_ratio - 1.0)
 
 
 def market_neutral_return(
-    long_return: Union[float, List[float], np.ndarray],
-    short_return: Union[float, List[float], np.ndarray],
-    long_weight: Union[float, List[float], np.ndarray] = 0.5,
-    short_weight: Union[float, List[float], np.ndarray] = 0.5,
-    short_borrowing_cost: Union[float, List[float], np.ndarray] = 0.0
-) -> Union[float, np.ndarray]:
+    long_return: Union[float, ArrayLike],
+    short_return: Union[float, ArrayLike],
+    long_weight: Union[float, ArrayLike] = 0.5,
+    short_weight: Union[float, ArrayLike] = 0.5,
+    short_borrowing_cost: Union[float, ArrayLike] = 0.0
+) -> Union[float, NDArray[np.float64]]:
     """
     Calculate the return of a market-neutral portfolio with long and short positions.
     
@@ -572,26 +586,30 @@ def market_neutral_return(
         isinstance(long_weight, (list, np.ndarray)) or
         isinstance(short_weight, (list, np.ndarray)) or
         isinstance(short_borrowing_cost, (list, np.ndarray))):
-        long_return = np.asarray(long_return)
-        short_return = np.asarray(short_return)
-        long_weight = np.asarray(long_weight)
-        short_weight = np.asarray(short_weight)
-        short_borrowing_cost = np.asarray(short_borrowing_cost)
+        long_return_arr = np.asarray(long_return, dtype=np.float64)
+        short_return_arr = np.asarray(short_return, dtype=np.float64)
+        long_weight_arr = np.asarray(long_weight, dtype=np.float64)
+        short_weight_arr = np.asarray(short_weight, dtype=np.float64)
+        short_borrowing_cost_arr = np.asarray(short_borrowing_cost, dtype=np.float64)
+        
+        long_contribution = long_return_arr * long_weight_arr
+        short_contribution = -short_return_arr * short_weight_arr
+        short_cost = short_borrowing_cost_arr * short_weight_arr
+        
+        return long_contribution + short_contribution - short_cost
     
     long_contribution = long_return * long_weight
-    
     short_contribution = -short_return * short_weight
-    
     short_cost = short_borrowing_cost * short_weight
     
     return long_contribution + short_contribution - short_cost
 
 
 def beta_adjusted_return(
-    portfolio_return: Union[float, List[float], np.ndarray],
-    benchmark_return: Union[float, List[float], np.ndarray],
-    portfolio_beta: Union[float, List[float], np.ndarray]
-) -> Union[float, np.ndarray]:
+    portfolio_return: Union[float, ArrayLike],
+    benchmark_return: Union[float, ArrayLike],
+    portfolio_beta: Union[float, ArrayLike]
+) -> Union[float, NDArray[np.float64]]:
     """
     Calculate the beta-adjusted return (alpha) of a portfolio.
     
@@ -622,22 +640,25 @@ def beta_adjusted_return(
     if (isinstance(portfolio_return, (list, np.ndarray)) or 
         isinstance(benchmark_return, (list, np.ndarray)) or 
         isinstance(portfolio_beta, (list, np.ndarray))):
-        portfolio_return = np.asarray(portfolio_return)
-        benchmark_return = np.asarray(benchmark_return)
-        portfolio_beta = np.asarray(portfolio_beta)
+        portfolio_return_arr = np.asarray(portfolio_return, dtype=np.float64)
+        benchmark_return_arr = np.asarray(benchmark_return, dtype=np.float64)
+        portfolio_beta_arr = np.asarray(portfolio_beta, dtype=np.float64)
+        
+        expected_return = portfolio_beta_arr * benchmark_return_arr
+        return portfolio_return_arr - expected_return
     
     expected_return = portfolio_beta * benchmark_return
     return portfolio_return - expected_return
 
 
 def long_short_equity_return(
-    long_portfolio_return: Union[float, List[float], np.ndarray],
-    short_portfolio_return: Union[float, List[float], np.ndarray],
-    long_exposure: Union[float, List[float], np.ndarray],
-    short_exposure: Union[float, List[float], np.ndarray],
-    risk_free_rate: Union[float, List[float], np.ndarray] = 0.0,
-    short_rebate: Union[float, List[float], np.ndarray] = 0.0
-) -> Union[float, np.ndarray]:
+    long_portfolio_return: Union[float, ArrayLike],
+    short_portfolio_return: Union[float, ArrayLike],
+    long_exposure: Union[float, ArrayLike],
+    short_exposure: Union[float, ArrayLike],
+    risk_free_rate: Union[float, ArrayLike] = 0.0,
+    short_rebate: Union[float, ArrayLike] = 0.0
+) -> Union[float, NDArray[np.float64]]:
     """
     Calculate the return of a long-short equity portfolio.
     
@@ -667,9 +688,9 @@ def long_short_equity_return(
     >>> long_short_equity_return(0.10, -0.05, 1.0, 0.5, 0.02, 0.01)
     0.14
     >>> long_short_equity_return([0.10, 0.12], [-0.05, -0.03], 1.0, 0.5, 0.02, 0.01)
-    [0.14, 0.15]
+    array([0.14, 0.15])
     >>> long_short_equity_return(0.10, -0.05, [1.0, 0.8], [0.5, 0.4], [0.02, 0.03], 0.01)
-    [0.14 , 0.122]
+    array([0.14 , 0.122])
     """
     if (isinstance(long_portfolio_return, (list, np.ndarray)) or 
         isinstance(short_portfolio_return, (list, np.ndarray)) or
@@ -677,21 +698,27 @@ def long_short_equity_return(
         isinstance(short_exposure, (list, np.ndarray)) or
         isinstance(risk_free_rate, (list, np.ndarray)) or
         isinstance(short_rebate, (list, np.ndarray))):
-        long_portfolio_return = np.asarray(long_portfolio_return)
-        short_portfolio_return = np.asarray(short_portfolio_return)
-        long_exposure = np.asarray(long_exposure)
-        short_exposure = np.asarray(short_exposure)
-        risk_free_rate = np.asarray(risk_free_rate)
-        short_rebate = np.asarray(short_rebate)
+        long_portfolio_return_arr = np.asarray(long_portfolio_return, dtype=np.float64)
+        short_portfolio_return_arr = np.asarray(short_portfolio_return, dtype=np.float64)
+        long_exposure_arr = np.asarray(long_exposure, dtype=np.float64)
+        short_exposure_arr = np.asarray(short_exposure, dtype=np.float64)
+        risk_free_rate_arr = np.asarray(risk_free_rate, dtype=np.float64)
+        short_rebate_arr = np.asarray(short_rebate, dtype=np.float64)
+        
+        cash_exposure_arr = 1.0 - long_exposure_arr + short_exposure_arr
+        
+        long_contribution = long_portfolio_return_arr * long_exposure_arr
+        short_contribution = -short_portfolio_return_arr * short_exposure_arr
+        cash_contribution = risk_free_rate_arr * cash_exposure_arr
+        rebate_contribution = short_rebate_arr * short_exposure_arr
+        
+        return long_contribution + short_contribution + cash_contribution + rebate_contribution
     
-    cash_exposure = 1 - long_exposure + short_exposure
+    cash_exposure = 1.0 - long_exposure + short_exposure
     
     long_contribution = long_portfolio_return * long_exposure
-    
     short_contribution = -short_portfolio_return * short_exposure
-    
     cash_contribution = risk_free_rate * cash_exposure
-    
     rebate_contribution = short_rebate * short_exposure
     
     return long_contribution + short_contribution + cash_contribution + rebate_contribution

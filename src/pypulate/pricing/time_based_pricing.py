@@ -34,9 +34,8 @@ def calculate_time_based_price(
     250.0  # 2.5 hours at $100/hour
     """
     if duration < minimum_duration:
-        return 0
+        duration = minimum_duration
     
-
     if time_unit == 'minute':
         price = base_price * duration
     elif time_unit == 'hour':
@@ -47,11 +46,11 @@ def calculate_time_based_price(
         raise ValueError(f"Unsupported time unit: {time_unit}")
     
     if rounding_method == 'up':
-        return np.ceil(price)
+        return float(np.ceil(price))
     elif rounding_method == 'down':
-        return np.floor(price)
+        return float(np.floor(price))
     elif rounding_method == 'nearest':
-        return np.round(price)
+        return float(np.round(price))
     else:
         raise ValueError(f"Unsupported rounding method: {rounding_method}")
     

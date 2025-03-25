@@ -14,27 +14,79 @@ Pypulate provides powerful classes for financial and business analytics:
 
 ### 1. Parray (Pypulate Array)
 
-The `Parray` class extends NumPy arrays with financial analysis capabilities:
+The `Parray` class extends NumPy arrays with financial analysis capabilities, preprocessing functions, and performance optimizations:
 
 ```python
 from pypulate import Parray
+import numpy as np
 
-# Create a price array
+# Create a price array from various sources
 prices = Parray([10, 11, 12, 11, 10, 9, 10, 11, 12, 13, 15, 11, 8, 10, 14, 16])
+prices_from_numpy = Parray(np.random.normal(100, 5, 1000))
 
 # Technical Analysis with method chaining
 result = (prices
-    .sma(3)                     # Simple Moving Average
+    .sma(3)                    # Simple Moving Average
     .ema(3)                    # Exponential Moving Average
     .rsi(7)                    # Relative Strength Index
 )
+
+# Data Preprocessing
+clean_data = (prices
+    .remove_outliers(method='zscore', threshold=3.0)  # Remove statistical outliers
+    .fill_missing(method='forward')                  # Fill missing values with forward fill
+    .interpolate_missing(method='cubic')             # Interpolate remaining missing values
+)
+
+# Standardization and Normalization
+normalized_data = prices.normalize(method='l2')              # L2 normalization
+standardized_data = prices.standardize()                     # Z-score standardization
+scaled_data = prices.min_max_scale(feature_range=(0, 1))     # Min-max scaling
+robust_data = prices.robust_scale(method='iqr')              # Robust scaling using IQR
+
+# Transformations
+log_data = prices.log_transform(offset=1.0)                  # Log transformation
+power_transformed = prices.power_transform(method='yeo-johnson')  # Power transformation
+discretized = prices.discretize(n_bins=5, strategy='quantile')  # Discretization
+
+# Time Series Operations
+lagged_features = prices.lag_features(lags=[1, 2, 3])        # Create lag features
+resampled = prices.resample(factor=2, method='mean')         # Downsample data
 
 # Signal Detection
 fast_ma = prices.sma(3)
 slow_ma = prices.sma(12)
 golden_cross = fast_ma.crossover(slow_ma)
 death_cross = fast_ma.crossunder(slow_ma)
+
+# Statistical Tests
+adf_stat, adf_pvalue = prices.augmented_dickey_fuller_test()  # Test for stationarity
+stats = prices.descriptive_stats()                           # Get descriptive statistics
 ```
+
+#### Key Features of Parray
+
+1. **Performance Optimization**
+    - GPU Acceleration: Use `enable_gpu()` for faster computations on compatible hardware
+    - Parallel Processing: Use `enable_parallel()` to utilize multiple CPU cores
+    - Memory Optimization: Use `optimize_memory()` for efficient memory usage with large datasets
+
+2. **Data Preprocessing**
+    - Outlier Handling: `remove_outliers()`, `winsorize()`, `clip_outliers()`
+    - Missing Value Handling: `fill_missing()`, `interpolate_missing()`
+    - Normalization: `normalize()`, `standardize()`, `min_max_scale()`, `robust_scale()`
+    - Transformations: `log_transform()`, `power_transform()`, `dynamic_tanh()`
+
+3. **Technical Analysis**
+    - Moving Averages: `sma()`, `ema()`, `wma()`, `hma()`, `zlma()`, etc.
+    - Momentum Indicators: `rsi()`, `macd()`, `stochastic_oscillator()`, etc.
+    - Volatility Indicators: `bollinger_bands()`, `atr()`, `keltner_channels()`, etc.
+    - Signal Detection: `crossover()`, `crossunder()`
+
+4. **Method Chaining**
+    - Chain methods together for complex operations in a single, readable line
+    - Avoid creating intermediate variables
+    - Efficiently combine preprocessing, analysis, and signal generation
 
 ### 2. KPI (Key Performance Indicators)
 

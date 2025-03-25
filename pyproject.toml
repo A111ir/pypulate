@@ -1,6 +1,6 @@
 [project]
 name = "pypulate"
-version = "0.2.2"
+version = "0.3.0"
 description = "High-performance financial and business analytics framework for Python"
 readme = "README.md"
 authors = [
@@ -87,3 +87,28 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 [tool.hatch.version]
 source = "vcs"
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+
+[[tool.mypy.overrides]]
+module = ["scipy.*"]
+ignore_missing_imports = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pypulate"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/pypulate",
+    "src/pypulate/py.typed",
+]
+
+[tool.hatch.build]
+artifacts = [
+    "src/pypulate/py.typed",
+]

@@ -30,14 +30,7 @@ def calculate_tiered_price(
     -------
     float
         Total price based on tiered pricing
-        
-    Examples
-    --------
-    >>> tiers = {"0-1000": 0.10, "1001-2000": 0.08, "2001+": 0.05}
-    >>> calculate_tiered_price(1500, tiers)
-    140.02
-    >>> calculate_tiered_price(1500, tiers, cumulative=False)
-    120.0
+
     """
     total_price = 0.0
     remaining_units = float(usage_units)

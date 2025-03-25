@@ -7,7 +7,7 @@
 
     ![GitHub Workflow Status](https://img.shields.io/badge/tests-passing-brightgreen)
     ![Coverage](https://img.shields.io/badge/coverage-passing-brightgreen)
-    ![PyPI](https://img.shields.io/badge/pypi-v0.1.0-brightgreen)
+    ![PyPI](https://img.shields.io/badge/pypi-v0.2.3-brightgreen)
     ![Python Versions](https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C%203.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue)
 
 Welcome to Pypulate, a high-performance Python framework for financial analysis and business metrics. Pypulate offers powerful classes designed to handle different aspects of financial and business analytics (more to come):
@@ -16,10 +16,11 @@ Welcome to Pypulate, a high-performance Python framework for financial analysis 
 
 ### Parray (Pypulate Array)
 
-A specialized array class for financial time series analysis with built-in technical analysis capabilities and chain methodss:
+A specialized array class for financial time series analysis with built-in technical analysis capabilities, preprocessing functions, and method chaining:
 
 ```python
 from pypulate import Parray
+import numpy as np
 
 # Create a price array
 prices = Parray([10, 11, 12, 11, 10, 9, 10, 11, 12, 13, 15, 11, 8, 10, 14, 16])
@@ -27,11 +28,19 @@ prices = Parray([10, 11, 12, 11, 10, 9, 10, 11, 12, 13, 15, 11, 8, 10, 14, 16])
 # Technical Analysis
 sma = prices.sma(5)                   
 rsi = prices.rsi(14)                  
-bb_upper, bb_mid, bb_lower = prices.bollinger_bands(20, 2)
 
-# Signal Detection
-golden_cross = prices.sma(5).crossover(prices.sma(10))
-death_cross = prices.sma(5).crossunder(prices.sma(10))
+# Data Preprocessing
+normalized = prices.normalize()        # L2 normalization  
+standardized = prices.standardize()    # Z-score standardization
+cleaned = prices.remove_outliers()     # Remove outliers
+transformed = prices.log_transform()   # Log transformation
+
+# Signal Detection with Method Chaining
+chain = (prices
+    .fill_missing(method='forward')    # Fill missing values
+    .standardize()                     # Standardize data
+    .sma(5)                            # Calculate 5-period SMA
+)
 
 # Volatility Analysis
 volatility = prices.historical_volatility(7)

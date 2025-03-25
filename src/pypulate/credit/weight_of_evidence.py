@@ -3,7 +3,7 @@ Weight of Evidence (WOE) and Information Value (IV) calculation.
 """
 
 import numpy as np
-from typing import Dict, Any
+from typing import Dict, Any, List, Union, cast
 from numpy.typing import ArrayLike
 
 
@@ -30,26 +30,41 @@ def weight_of_evidence(good_count: ArrayLike, bad_count: ArrayLike,
     dict
         WOE values, IV, and distributions
     """
-    good_count = np.array(good_count)
-    bad_count = np.array(bad_count)
+    good_arr = np.array(good_count, dtype=float)
+    bad_arr = np.array(bad_count, dtype=float)
     
-    total_samples = np.sum(good_count) + np.sum(bad_count)
-    bin_samples = good_count + bad_count
+    if len(good_arr) == 0 or len(bad_arr) == 0:
+        raise ValueError("Empty arrays are not allowed")
+    
+    if len(good_arr) != len(bad_arr):
+        raise ValueError("Length of good_count and bad_count must match")
+    
+    total_good_count: float = float(np.sum(good_arr))
+    total_bad_count: float = float(np.sum(bad_arr))
+    total_samples: float = total_good_count + total_bad_count
+    
+    bin_samples = good_arr + bad_arr
     small_bins = bin_samples < (min_samples * total_samples)
     
-    good_count = good_count + adjustment * (good_count == 0)
-    bad_count = bad_count + adjustment * (bad_count == 0)
+    good_adj = np.copy(good_arr)
+    bad_adj = np.copy(bad_arr)
     
-    total_good = np.sum(good_count)
-    total_bad = np.sum(bad_count)
+    zero_good_mask = good_arr == 0
+    zero_bad_mask = bad_arr == 0
     
-    good_dist = good_count / total_good
-    bad_dist = bad_count / total_bad
+    good_adj[zero_good_mask] += adjustment
+    bad_adj[zero_bad_mask] += adjustment
+    
+    total_good_adj: float = float(np.sum(good_adj))
+    total_bad_adj: float = float(np.sum(bad_adj))
+    
+    good_dist = good_adj / total_good_adj
+    bad_dist = bad_adj / total_bad_adj
     
     woe = np.log(good_dist / bad_dist)
+    iv: float = float(np.sum((good_dist - bad_dist) * woe))
     
-    iv = np.sum((good_dist - bad_dist) * woe)
-    
+    iv_strength: str
     if iv < 0.02:
         iv_strength = "Not predictive"
     elif iv < 0.1:

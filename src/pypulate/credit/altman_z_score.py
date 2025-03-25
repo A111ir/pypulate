@@ -2,11 +2,11 @@
 Altman Z-Score for bankruptcy prediction.
 """
 
-import numpy as np
+from typing import Union
 
 
 def altman_z_score(working_capital, retained_earnings, ebit, 
-                  market_value_equity, sales, total_assets, total_liabilities) -> dict[str, float | str]:
+                  market_value_equity, sales, total_assets, total_liabilities) -> dict[str, Union[float, str]]:
     """
     Calculate Altman Z-Score for predicting bankruptcy risk.
     

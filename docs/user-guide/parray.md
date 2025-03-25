@@ -1,19 +1,22 @@
-# Using the Parray Class
+# Parray - Enhanced NumPy Arrays for Financial Analysis
 
-The `Parray` class is a powerful tool for financial time series analysis in Pypulate. It extends NumPy arrays with financial analysis methods that can be chained together for complex calculations.
+The `Parray` class is a powerful extension of NumPy arrays specifically designed for financial time series analysis. It provides a comprehensive set of methods for technical analysis, statistical operations, and performance optimization.
 
 ## Introduction
 
-`Parray` is designed to make financial time series analysis more intuitive and concise. It inherits from `numpy.ndarray`, so it has all the functionality of NumPy arrays, plus additional methods for financial analysis.
+`Parray` inherits from `numpy.ndarray`, so it has all the functionality of NumPy arrays plus a rich ecosystem of financial analysis methods. Its key advantages include:
 
-## Getting Started
+- Method chaining for concise, readable code
+- GPU acceleration for improved performance
+- Parallel processing for handling large datasets
+- Comprehensive set of financial indicators and statistical tools
+- Memory optimization for large datasets
 
-### Creating a Parray
-
-You can create a `Parray` object from any array-like object using the `Parray` class:
+## Creating a Parray
 
 ```python
 from pypulate.dtypes import Parray
+import numpy as np
 
 # From a list
 data = [1, 2, 3, 4, 5]
@@ -22,172 +25,472 @@ p = Parray(data)
 # From a NumPy array
 data = np.array([1, 2, 3, 4, 5])
 p = Parray(data)
+
+# From a 2D array (e.g., multiple time series)
+data_2d = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+p_2d = Parray(data_2d)
+
+# With memory optimization
+p_optimized = Parray(data, memory_optimized=True)
 ```
 
+## Performance Optimization
+
+!!! note "Performance Optimization"
+    Most Parray methods are already highly optimized using efficient NumPy operations and vectorization. You typically don't need to enable additional optimization features unless you're working with very large datasets or have specific performance requirements.
+
+### GPU Acceleration
+
+```python
+# Check if GPU is available
+if Parray.is_gpu_available():
+    # Get GPU info
+    gpu_info = Parray.get_gpu_info()
+    print(f"GPU devices: {len(gpu_info['devices'])}")
+    
+    # Create a Parray with GPU acceleration
+    p = Parray([1, 2, 3, 4, 5])
+    p.enable_gpu()
+    
+    # Perform calculations on GPU
+    result = p.standardize()
+    
+    # Disable GPU when no longer needed
+    p.disable_gpu()
+```
+
+### Parallel Processing
+
+```python
+# Enable parallel processing with default settings
+p = Parray(np.random.random(1000000))
+p.enable_parallel()
+
+# Enable with custom settings
+p.enable_parallel(num_workers=8, chunk_size=100000)
+
+# Perform calculation in parallel
+result = p.standardize()
+
+# Disable parallel processing
+p.disable_parallel()
+```
+
+### Memory Optimization
+
+```python
+# Create a memory-optimized Parray
+p = Parray(np.random.random(1000000), memory_optimized=True)
+
+# Or optimize an existing Parray
+p = Parray(np.random.random(1000000))
+p.optimize_memory()
+
+# Process large datasets in chunks
+chunks = p.to_chunks(chunk_size=100000)
+results = [chunk.normalize() for chunk in chunks]
+final_result = Parray.from_chunks(results)
+
+# Disable memory optimization
+p.disable_memory_optimization()
+```
 
 ## Moving Averages
 
-`Parray` provides methods for calculating various moving averages:
-
 ```python
-from pypulate import Parray
-
-data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-p = Parray(data)
+# Sample price data
+prices = Parray([10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 19, 18, 17, 16, 17, 18, 19, 20, 21])
 
 # Simple Moving Average
-sma = p.sma(3)  # 3-period SMA
+sma = prices.sma(period=5)
 
 # Exponential Moving Average
-ema = p.ema(3)  # 3-period EMA
+ema = prices.ema(period=5)
 
 # Weighted Moving Average
-wma = p.wma(3)  # 3-period WMA
+wma = prices.wma(period=5)
+
+# Triple Exponential Moving Average (T3)
+t3 = prices.t3(period=5, vfactor=0.7)
 
 # Hull Moving Average
-hma = p.hma(3)  # 3-period HMA
+hma = prices.hma(period=5)
+
+# Triangular Moving Average
+tma = prices.tma(period=5)
+
+# Smoothed Moving Average
+smma = prices.smma(period=5)
+
+# Zero-Lag Moving Average
+zlma = prices.zlma(period=5)
+
+# Kaufman Adaptive Moving Average
+kama = prices.kama(period=5, fast_period=2, slow_period=30)
+
+# Fractal Adaptive Moving Average
+frama = prices.frama(period=5)
+
+# McGinley Dynamic
+md = prices.mcginley_dynamic(period=5, k=0.6)
 ```
 
-## Crossover and Crossunder Detection
-
-One of the most useful features of `Parray` is the ability to detect crossovers and crossunders, which are common signals in technical analysis:
+## Momentum Indicators
 
 ```python
-from pypulate.dtypes import Parray
-
-# Create sample price data
-data = Parray([10, 11, 12, 11, 10, 11, 12, 13])
-
-# Find where prices cross above 11
-crossover_points = data.crossover(11)
-
-# Find where prices cross below 11
-crossunder_points = data.crossunder(11)
-
-# Find where prices cross above a moving average
-ma = data.sma(3)
-crossover_ma = data.crossover(ma)
-```
-
-## Advanced Technical Analysis
-
-### Oscillators and Momentum
-
-```python
-from pypulate import Parray
-
-# Sample price data
-prices = Parray([
-    100, 102, 104, 103, 105, 107, 106, 108, 110, 109,
-    111, 113, 112, 115, 114, 116, 118, 117, 119, 120
-])
-
 # RSI (Relative Strength Index)
-rsi = prices.rsi(14)  # 14-period RSI
-
-
-# MACD (Moving Average Convergence Divergence)
-macd_line, signal_line, histogram = prices.macd(6, 12, 6)
-
-# Rate of Change (ROC)
-roc = prices.roc(12)  # 12-period rate of change
+rsi = prices.rsi(period=14)
 
 # Momentum
-momentum = prices.momentum(10)  # 10-period momentum
+momentum = prices.momentum(period=14)
 
+# Rate of Change
+roc = prices.roc(period=14)
+
+# MACD (Moving Average Convergence Divergence)
+# Note: Your data must be longer than the slow_period parameter
+# Create sufficiently long data for MACD calculation
+longer_prices = Parray(np.arange(1, 51))  # 50 data points
+# Or use smaller periods for smaller datasets
+macd_line, signal_line, histogram = prices.macd(fast_period=5, slow_period=10, signal_period=3)  # For smaller datasets
+# Default parameters (requires at least 26 data points)
+macd_line, signal_line, histogram = longer_prices.macd(fast_period=12, slow_period=26, signal_period=9)
+
+# Stochastic Oscillator (requires high and low data)
+high = Parray([11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 20, 19, 18, 17, 18, 19, 20, 21, 22])
+low = Parray([9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 18, 17, 16, 15, 16, 17, 18, 19, 20])
+k, d = prices.stochastic_oscillator(high, low, k_period=14, d_period=3)
+
+# True Strength Index
+# Note: The data length must be greater than the long_period parameter (25 by default)
+# For smaller datasets, use smaller parameters
+tsi_line, signal_line = prices.tsi(long_period=5, short_period=3, signal_period=2)  # Works with smaller data
+# With default parameters (requires at least 25 data points)
+tsi_line, signal_line = longer_prices.tsi(long_period=25, short_period=13, signal_period=7)
+
+# Williams %R (requires high and low data)
+williams_r = prices.williams_r(high, low, period=14)
+
+# Commodity Channel Index (CCI)
+cci = prices.cci(period=20, constant=0.015)
+
+# Average Directional Index (ADX)
+adx = prices.adx(period=14)
 ```
 
-### Volatility Indicators
+## Volatility Indicators
 
 ```python
-# Sample OHLC data
-high = Parray([
-    102, 104, 105, 104, 107, 108, 107, 109, 111, 110,
-    112, 114, 113, 116, 115, 117, 119, 118, 120, 121
-])
-low = Parray([
-    99, 101, 103, 102, 104, 106, 105, 107, 109, 108,
-    110, 112, 111, 114, 113, 115, 117, 116, 118, 119
-])
-close = Parray([
-    100, 102, 104, 103, 105, 107, 106, 108, 110, 109,
-    111, 113, 112, 115, 114, 116, 118, 117, 119, 120
-])
+# Bollinger Bands
+upper, middle, lower = prices.bollinger_bands(period=20, std_dev=2.0)
 
-# Bollinger Bands (uses close prices)
-upper_band, middle_band, lower_band = close.bollinger_bands(12, 2)  # 12-period, 2 standard deviations
+# Average True Range (ATR)
+atr = prices.atr(high, low, period=14)
 
-# Average True Range (ATR) - requires high, low, close prices
-atr = Parray.atr(high, low, close, 14)  # 14-period ATR
+# Keltner Channels
+k_upper, k_middle, k_lower = prices.keltner_channels(high=high, low=low, period=20, atr_period=10, multiplier=2.0)
 
-# Keltner Channels (uses high, low, close for ATR calculation)
-k_upper, k_middle, k_lower = Parray.keltner_channels(close, high, low, 12, 2)  # 12-period, 2 ATR multiplier
+# Donchian Channels
+d_upper, d_middle, d_lower = prices.donchian_channels(high=high, low=low, period=20)
 
-# Standard Deviation
-std = close.rolling_std(12)  # 12-period rolling standard deviation
+# Historical Volatility
+hv = prices.historical_volatility(period=21, annualization_factor=252)
 
-# CCI with typical price
-cci = close.typical_price(high, low).cci(9)
+# Volatility Ratio
+vr = prices.volatility_ratio(period=21, smooth_period=5)
 ```
 
-### Trade Strategy
+## Statistical Functions
 
 ```python
-# Calculate indicators
-adx = close.adx(14)  # 14-period ADX
-ma_10 = close.sma(10)  # 10-period SMA
+# Rolling Maximum
+roll_max = prices.rolling_max(period=14)
 
-# Generate long position signals
-# Long when: price > MA(10) AND ADX < 30 (weak trend, good for entry)
-long_signals = (close > ma_10) & (adx < 30)
+# Rolling Minimum
+roll_min = prices.rolling_min(period=14)
 
-# Get indices where long_signals is True
-print("Long Entry Points:", np.where(long_signals)[0])
+# Rolling Standard Deviation
+roll_std = prices.rolling_std(period=14)
 
+# Rolling Variance
+roll_var = prices.rolling_var(period=14)
+
+# Z-Score
+zscore = prices.zscore(period=14)
+
+# Descriptive Statistics
+stats = prices.descriptive_stats()
+print(f"Mean: {stats['mean']}, Std: {stats['std']}, Skewness: {stats['skewness']}")
+
+# Autocorrelation
+acf = prices.autocorrelation(max_lag=20)
+
+# Partial Autocorrelation
+pacf = prices.partial_autocorrelation(max_lag=20)
+
+# Stationarity Tests
+jb_stat, jb_pvalue = prices.jarque_bera_test()
+adf_stat, adf_pvalue = prices.augmented_dickey_fuller_test()
+kpss_stat, kpss_pvalue = prices.kpss_test()
+
+# Correlation Matrix (requires 2D data)
+multi_series = Parray(np.random.random((100, 3)))  # 3 series, 100 observations each
+corr_matrix = multi_series.correlation_matrix(method='pearson')
+
+# Covariance Matrix
+cov_matrix = multi_series.covariance_matrix(ddof=1)
 ```
 
-
-### Custom Indicators
+## crossovers
 
 ```python
-# Create custom indicators using method chaining
-custom_ma = (
-    prices.sma(10) * 0.5 +      # 50% weight to SMA
-    prices.ema(10) * 0.3 +      # 30% weight to EMA
-    prices.wma(10) * 0.2        # 20% weight to WMA
+# Crossover and Crossunder Detection
+fast_ma = prices.ema(5)
+slow_ma = prices.ema(20)
+
+# Detect when fast MA crosses above slow MA (buy signal)
+buy_signals = fast_ma.crossover(slow_ma)
+
+# Detect when fast MA crosses below slow MA (sell signal)
+sell_signals = fast_ma.crossunder(slow_ma)
+```
+
+## Filters and Smoothing
+
+```python
+# Kalman Filter
+kf = prices.kalman_filter(process_variance=1e-5, measurement_variance=1e-3)
+
+# Adaptive Kalman Filter
+akf = prices.adaptive_kalman_filter(process_variance_init=1e-5, measurement_variance_init=1e-3, 
+                                 adaptation_rate=0.01, window_size=10)
+
+# Butterworth Filter
+# Note: The data length must be greater than 3*(filter order) + 1
+# Higher order filters require more data points
+# Use lower order for small datasets
+bf_low = prices.butterworth_filter(cutoff=0.1, order=2, filter_type='lowpass')  # Order 2 requires at least 7 points
+
+# For higher order filters, use longer data
+# Order 4 requires at least 13 data points, order 6 requires 19 points, etc.
+bf_high = longer_prices.butterworth_filter(cutoff=0.1, order=4, filter_type='highpass')
+bf_band = longer_prices.butterworth_filter(cutoff=(0.1, 0.4), order=4, filter_type='bandpass')
+
+# Savitzky-Golay Filter
+sg = prices.savitzky_golay_filter(window_length=11, polyorder=3)
+
+# Hampel Filter (for outlier removal)
+hf = prices.hampel_filter(window_size=5, n_sigmas=3.0)
+
+# Hodrick-Prescott Filter
+trend, cycle = prices.hodrick_prescott_filter(lambda_param=1600.0)
+```
+
+## Data Transformations
+
+```python
+# Normalize
+normalized = prices.normalize(method='l2')
+l1_norm = prices.normalize_l1()
+l2_norm = prices.normalize_l2()
+
+# Standardize
+standardized = prices.standardize()
+
+# Min-Max Scale
+minmax = prices.min_max_scale(feature_range=(0, 1))
+
+# Robust Scale
+robust = prices.robust_scale(method='iqr', quantile_range=(25.0, 75.0))
+
+# Quantile Transform
+quantile = prices.quantile_transform(n_quantiles=1000, output_distribution='uniform')
+
+# Winsorize
+winsorized = prices.winsorize(limits=0.05)
+
+# Remove Outliers
+clean = prices.remove_outliers(method='zscore', threshold=3.0)
+
+# Fill Missing Values
+filled = prices.fill_missing(method='mean')
+
+# Interpolate Missing Values
+interpolated = prices.interpolate_missing(method='linear')
+
+# Log Transform
+# Note: Use offset for zero/negative values
+log_data = prices.log_transform(base=None, offset=1.0 if prices.min() <= 0 else 0.0)
+
+# Power Transform
+power_transformed = prices.power_transform(method='yeo-johnson')
+
+# Scale to Range
+scaled = prices.scale_to_range(feature_range=(0.0, 1.0))
+
+# Clip Outliers
+clipped = prices.clip_outliers(lower_percentile=1.0, upper_percentile=99.0)
+
+# Discretize
+discretized = prices.discretize(n_bins=5, strategy='uniform')
+
+# Polynomial Features
+poly = prices.polynomial_features(degree=2)
+
+# Resample
+resampled = prices.resample(factor=2, method='mean')
+
+# Dynamic Tanh
+tanh_transformed = prices.dynamic_tanh(alpha=1.0)
+```
+
+## Time Series Operations
+
+```python
+# Create Lag Features
+lagged = prices.lag_features(lags=[1, 2, 3])
+
+# Calculate Slope
+slope = prices.slope(period=5)
+
+# Wave Function
+wave = prices.wave(high=high, low=low, close=prices)
+
+# ZigZag
+zigzag = prices.zigzag(threshold=0.03)
+
+# Rolling Window Statistics
+roll_stats = prices.rolling_statistics(window=10, statistics=['mean', 'std', 'skew', 'kurt'])
+roll_mean = roll_stats['mean']
+roll_std = roll_stats['std']
+```
+
+## Advanced Usage
+
+### Method Chaining
+
+One of the most powerful features of Parray is the ability to chain methods:
+
+```python
+# Complex analysis in a single chain
+result = (
+    prices
+    .remove_outliers(method='zscore', threshold=3.0)
+    .fill_missing(method='mean')
+    .log_transform(offset=1.0 if prices.min() <= 0 else 0.0)
+    .ema(period=5)
+    .standardize()
 )
 
-# Custom momentum indicator
-custom_momentum = (
-    prices.roc(10) * 0.4 +      # 40% weight to ROC
-    prices.rsi(14) * 0.3 +      # 30% weight to RSI
-    prices.momentum(10) * 0.3   # 30% weight to Momentum
+# Creating a custom indicator
+custom_indicator = (
+    (prices.ema(5) - prices.ema(20)) /  # Fast MA - Slow MA
+    prices.atr(high, low, 14)            # Normalized by ATR
 )
+```
+
+### Custom Functions with apply and apply_along_axis
+
+```python
+# Apply a custom function to each element
+# Note: When using apply(), the function must handle entire arrays at once
+def custom_func_array(x):
+    # Use vectorized operations instead of if-else
+    result = np.empty_like(x, dtype=float)
+    positive_mask = x > 0
+    result[positive_mask] = np.sin(x[positive_mask])
+    result[~positive_mask] = np.cos(x[~positive_mask])
+    return result
+
+result = prices.apply(custom_func_array)
+
+# Alternative: Use numpy's vectorize to convert element-wise function to array function
+@np.vectorize
+def custom_func_element(x):
+    # This operates on single elements
+    return np.sin(x) if x > 0 else np.cos(x)
+
+result = prices.apply(lambda x: custom_func_element(x))
+
+# Apply a function along an axis (for 2D arrays)
+def row_func(row):
+    return np.sum(row) / np.max(row)
+
+result_2d = multi_series.apply_along_axis(row_func, axis=1)
+
+# Rolling apply
+def roll_func(window):
+    return np.max(window) - np.min(window)
+
+roll_range = prices.rolling_apply(window=5, func=roll_func)
 ```
 
 ## Best Practices
 
-### 1. Signal Generation
-- 1.1. **Multiple Indicators**: Combine multiple indicators for confirmation
-- 1.2. **Risk Management**: Use proper risk management with every signal
-- 1.3. **Time Frame Alignment**: Consider time frame alignment across indicators
-- 1.4. **Noise Filtering**: Filter out noise with minimum threshold values
+### Performance Optimization
 
-### 2. Performance Optimization
-- 2.1. **Memory Management**: Be mindful that method chaining creates intermediate arrays
-- 2.2. **Large Datasets**: For extremely large datasets, consider using underlying functions directly
-- 2.3. **Vectorization**: Leverage NumPy's vectorized operations for better performance
+1. **Enable GPU for large datasets**:
+   ```python
+   if Parray.is_gpu_available():
+       prices.enable_gpu()
+   ```
 
-### 3. Analysis Techniques
-- 3.1. **Custom Indicators**: Create custom indicators by combining existing ones
-- 3.2. **Backtesting**: Test strategies on historical data before applying
-- 3.3. **Parameter Optimization**: Test different parameters to find optimal settings
+2. **Use parallel processing for CPU-bound operations**:
+   ```python
+   prices.enable_parallel(num_workers=4)
+   ```
 
-## Performance Considerations
+3. **Process very large datasets in chunks**:
+   ```python
+   chunks = prices.to_chunks(chunk_size=100000)
+   results = [process_chunk(chunk) for chunk in chunks]
+   final = Parray.from_chunks(results)
+   ```
 
-Since `Parray` is a subclass of `numpy.ndarray`, it inherits all of NumPy's performance characteristics. However, there are a few things to keep in mind:
+4. **Use memory optimization for memory-intensive operations**:
+   ```python
+   prices.optimize_memory()
+   ```
 
-1. Method chaining creates intermediate arrays, which can increase memory usage for very large datasets.
-2. For extremely performance-critical applications, you may want to use the underlying functions directly.
+### Technical Analysis
 
-For most use cases, the convenience of method chaining outweighs any minor performance impact. 
+1. **Combine multiple indicators for confirmation**:
+   ```python
+   buy_signal = (
+       prices.crossover(prices.sma(20)) &  # Price crosses above MA
+       (prices.rsi(14) < 70) &            # RSI not overbought
+       (prices.adx(14) > 25)              # Strong trend
+   )
+   ```
+
+2. **Use proper normalization for comparing instruments**:
+   ```python
+   # Compare two instruments on the same scale
+   stock1_norm = stock1_prices.standardize()
+   stock2_norm = stock2_prices.standardize()
+   ```
+
+3. **Consider time frame alignment**:
+   ```python
+   # Daily chart
+   daily_signal = daily_prices.crossover(daily_prices.sma(200))
+   
+   # Weekly chart confirmation
+   weekly_signal = weekly_prices.rsi(14) < 50
+   ```
+
+4. **Maintain good data hygiene**:
+   ```python
+   # Clean data before analysis
+   clean_prices = (
+       prices
+       .remove_outliers()
+       .fill_missing(method='forward')
+       .interpolate_missing(method='linear')
+   )
+   ```
+
+
+## Conclusion
+
+The `Parray` class offers a powerful, flexible approach to financial time series analysis with NumPy's performance and a rich set of financial indicators and statistical tools. By leveraging method chaining, GPU acceleration, and parallel processing, you can perform complex analyses with clear, concise code. 

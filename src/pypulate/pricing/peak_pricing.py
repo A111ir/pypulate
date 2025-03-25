@@ -34,37 +34,25 @@ def calculate_peak_pricing(
     >>> calculate_peak_pricing(100, "10:00", {"monday": ("09:00", "17:00")})
     150.0  # $100 * 1.5
     """
+    # Convert usage time to minutes for easier comparison
     usage_hour, usage_minute = map(int, usage_time.split(':'))
+    usage_time_in_minutes = usage_hour * 60 + usage_minute
     
     is_peak = False
     for weekday, (start, end) in peak_hours.items():
+        # Convert start time to minutes
         start_hour, start_minute = map(int, start.split(':'))
-        end_hour, end_minute = map(int, end.split(':'))
+        start_time_in_minutes = start_hour * 60 + start_minute
         
-        if weekday == "monday" and start_hour <= usage_hour < end_hour:
-            is_peak = True
-            break
-        elif weekday == "tuesday" and start_hour <= usage_hour < end_hour:
-            is_peak = True
-            break
-        elif weekday == "wednesday" and start_hour <= usage_hour < end_hour:
-            is_peak = True
-            break
-        elif weekday == "thursday" and start_hour <= usage_hour < end_hour:
-            is_peak = True
-            break
-        elif weekday == "friday" and start_hour <= usage_hour < end_hour:
-            is_peak = True
-            break
-        elif weekday == "saturday" and start_hour <= usage_hour < end_hour:
-            is_peak = True
-            break
-        elif weekday == "sunday" and start_hour <= usage_hour < end_hour:
+        # Convert end time to minutes
+        end_hour, end_minute = map(int, end.split(':'))
+        end_time_in_minutes = end_hour * 60 + end_minute
+        
+        # Check if usage time falls within this peak window
+        if start_time_in_minutes <= usage_time_in_minutes < end_time_in_minutes:
             is_peak = True
             break
     
-    
-
     if is_peak:
         return base_price * peak_multiplier
     else:

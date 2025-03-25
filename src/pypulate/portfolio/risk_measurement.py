@@ -5,18 +5,19 @@ This module provides various risk metrics used in portfolio management and finan
 """
 
 import numpy as np
-from typing import Union, Tuple, Optional, List, Any, cast, TypeVar
+from typing import Union, Tuple, Optional, List
+from numpy.typing import ArrayLike, NDArray
 from scipy import stats
 
 
 
-def standard_deviation(returns: Union[List[float], np.ndarray], annualize: bool = False, periods_per_year: int = 252) -> float:
+def standard_deviation(returns: ArrayLike, annualize: bool = False, periods_per_year: int = 252) -> float:
     """
     Calculate the standard deviation of returns.
     
     Parameters
     ----------
-    returns : list or np.ndarray
+    returns : array-like
         Array or list of returns
     annualize : bool, default False
         Whether to annualize the standard deviation
@@ -33,19 +34,18 @@ def standard_deviation(returns: Union[List[float], np.ndarray], annualize: bool 
     Standard deviation measures the dispersion of returns around the mean.
     It is the square root of the variance.
     """
-    if not isinstance(returns, np.ndarray):
-        returns = np.array(returns)
+    returns_arr = np.asarray(returns, dtype=np.float64)
         
-    std = np.std(returns, ddof=1)  
+    std = np.std(returns_arr, ddof=1)  
     
     if annualize:
         std = std * np.sqrt(periods_per_year)
         
-    return std
+    return float(std)
 
 
 def semi_standard_deviation(
-        returns: Union[List[float], np.ndarray], 
+        returns: ArrayLike, 
         threshold: float = 0.0, 
         annualize: bool = False, 
         periods_per_year: int = 252) -> float:
@@ -54,7 +54,7 @@ def semi_standard_deviation(
     
     Parameters
     ----------
-    returns : list or np.ndarray
+    returns : array-like
         Array or list of returns
     threshold : float, default 0.0
         Threshold below which to calculate semi-standard deviation
@@ -73,10 +73,9 @@ def semi_standard_deviation(
     Semi-standard deviation only considers returns below the threshold (typically 0),
     making it a measure of downside risk.
     """
-    if not isinstance(returns, np.ndarray):
-        returns = np.array(returns)
+    returns_arr = np.asarray(returns, dtype=np.float64)
         
-    downside_returns = returns[returns < threshold]
+    downside_returns = returns_arr[returns_arr < threshold]
     
     if len(downside_returns) == 0:
         return 0.0
@@ -86,20 +85,20 @@ def semi_standard_deviation(
     if annualize:
         semi_std = semi_std * np.sqrt(periods_per_year)
         
-    return semi_std
+    return float(semi_std)
 
 
-def tracking_error(portfolio_returns: Union[List[float], np.ndarray], 
-                  benchmark_returns: Union[List[float], np.ndarray], 
+def tracking_error(portfolio_returns: ArrayLike, 
+                  benchmark_returns: ArrayLike, 
                   annualize: bool = False, periods_per_year: int = 252) -> float:
     """
     Calculate the tracking error between portfolio returns and benchmark returns.
     
     Parameters
     ----------
-    portfolio_returns : list or np.ndarray
+    portfolio_returns : array-like
         Array or list of portfolio returns
-    benchmark_returns : list or np.ndarray
+    benchmark_returns : array-like
         Array or list of benchmark returns
     annualize : bool, default False
         Whether to annualize the tracking error
@@ -116,34 +115,32 @@ def tracking_error(portfolio_returns: Union[List[float], np.ndarray],
     Tracking error measures how closely a portfolio follows its benchmark.
     It is the standard deviation of the difference between portfolio and benchmark returns.
     """
-    if not isinstance(portfolio_returns, np.ndarray):
-        portfolio_returns = np.array(portfolio_returns)
-    if not isinstance(benchmark_returns, np.ndarray):
-        benchmark_returns = np.array(benchmark_returns)
+    portfolio_returns_arr = np.asarray(portfolio_returns, dtype=np.float64)
+    benchmark_returns_arr = np.asarray(benchmark_returns, dtype=np.float64)
     
-    if len(portfolio_returns) != len(benchmark_returns):
+    if len(portfolio_returns_arr) != len(benchmark_returns_arr):
         raise ValueError("Portfolio returns and benchmark returns must have the same length")
     
-    excess_returns = portfolio_returns - benchmark_returns
+    excess_returns = portfolio_returns_arr - benchmark_returns_arr
     
     te = np.std(excess_returns, ddof=1)
     
     if annualize:
         te = te * np.sqrt(periods_per_year)
         
-    return te
+    return float(te)
 
 
-def capm_beta(portfolio_returns: Union[List[float], np.ndarray], 
-             market_returns: Union[List[float], np.ndarray]) -> float:
+def capm_beta(portfolio_returns: ArrayLike, 
+             market_returns: ArrayLike) -> float:
     """
     Calculate the CAPM beta of a portfolio.
     
     Parameters
     ----------
-    portfolio_returns : list or np.ndarray
+    portfolio_returns : array-like
         Array or list of portfolio returns
-    market_returns : list or np.ndarray
+    market_returns : array-like
         Array or list of market returns
         
     Returns
@@ -156,23 +153,21 @@ def capm_beta(portfolio_returns: Union[List[float], np.ndarray],
     Beta measures the sensitivity of portfolio returns to market returns.
     It is the covariance of portfolio returns and market returns divided by the variance of market returns.
     """
-    if not isinstance(portfolio_returns, np.ndarray):
-        portfolio_returns = np.array(portfolio_returns)
-    if not isinstance(market_returns, np.ndarray):
-        market_returns = np.array(market_returns)
+    portfolio_returns_arr = np.asarray(portfolio_returns, dtype=np.float64)
+    market_returns_arr = np.asarray(market_returns, dtype=np.float64)
     
-    if len(portfolio_returns) != len(market_returns):
+    if len(portfolio_returns_arr) != len(market_returns_arr):
         raise ValueError("Portfolio returns and market returns must have the same length")
     
-    covariance = np.cov(portfolio_returns, market_returns)[0, 1]
-    market_variance = np.var(market_returns, ddof=1)
+    covariance = np.cov(portfolio_returns_arr, market_returns_arr)[0, 1]
+    market_variance = np.var(market_returns_arr, ddof=1)
     
     beta = covariance / market_variance
     
-    return beta
+    return float(beta)
 
 
-def value_at_risk(returns: Union[List[float], np.ndarray], confidence_level: float = 0.95, 
+def value_at_risk(returns: ArrayLike, confidence_level: float = 0.95, 
                  method: str = 'historical', parametric_mean: Optional[float] = None,
                  parametric_std: Optional[float] = None, 
                  current_value: float = 1.0) -> float:
@@ -181,7 +176,7 @@ def value_at_risk(returns: Union[List[float], np.ndarray], confidence_level: flo
     
     Parameters
     ----------
-    returns : list or np.ndarray
+    returns : array-like
         Array or list of returns
     confidence_level : float, default 0.95
         Confidence level for VaR calculation (e.g., 0.95 for 95% confidence)
@@ -204,83 +199,76 @@ def value_at_risk(returns: Union[List[float], np.ndarray], confidence_level: flo
     VaR measures the potential loss in value of a portfolio over a defined period
     for a given confidence interval.
     """
-    if not isinstance(returns, np.ndarray):
-        returns = np.array(returns)
+    returns_arr = np.asarray(returns, dtype=np.float64)
+    var_value: float = 0.0
         
     if method == 'historical':
         var_percentile = 1 - confidence_level
-        var_return = np.percentile(returns, var_percentile * 100)
-        var_value = current_value * -var_return  
+        var_return = np.percentile(returns_arr, var_percentile * 100)
+        var_value = current_value * -float(var_return)
         
     elif method == 'parametric':
-        if parametric_mean is None:
-            parametric_mean = np.mean(returns)
-        if parametric_std is None:
-            parametric_std = np.std(returns, ddof=1)
+        param_mean: float = float(np.mean(returns_arr)) if parametric_mean is None else parametric_mean
+        param_std: float = float(np.std(returns_arr, ddof=1)) if parametric_std is None else parametric_std
             
         z_score = stats.norm.ppf(1 - confidence_level)
-        var_return = parametric_mean + z_score * parametric_std
-        var_value = current_value * -var_return  
+        var_return = param_mean + z_score * param_std
+        var_value = current_value * -float(var_return)
         
     elif method == 'monte_carlo':
-        if parametric_mean is None:
-            parametric_mean = np.mean(returns)
-        if parametric_std is None:
-            parametric_std = np.std(returns, ddof=1)
+        mc_mean: float = float(np.mean(returns_arr)) if parametric_mean is None else parametric_mean
+        mc_std: float = float(np.std(returns_arr, ddof=1)) if parametric_std is None else parametric_std
             
         np.random.seed(42) 
-        simulated_returns = np.random.normal(parametric_mean, parametric_std, 10000)
+        simulated_returns = np.random.normal(mc_mean, mc_std, 10000)
         
         var_percentile = 1 - confidence_level
         var_return = np.percentile(simulated_returns, var_percentile * 100)
-        var_value = current_value * -var_return 
+        var_value = current_value * -float(var_return)
         
     else:
         raise ValueError("Method must be 'historical', 'parametric', or 'monte_carlo'")
     
-    return max(0, var_value) 
+    return float(max(0.0, var_value))
 
 
-
-def covariance_matrix(returns_matrix: Union[List[List[float]], np.ndarray]) -> np.ndarray:
+def covariance_matrix(returns_matrix: ArrayLike) -> NDArray[np.float64]:
     """
     Calculate the covariance matrix of returns.
     
     Parameters
     ----------
-    returns_matrix : list of lists or np.ndarray
+    returns_matrix : array-like
         Matrix of returns where each column represents an asset
         
     Returns
     -------
-    np.ndarray or list of lists
+    ndarray
         Covariance matrix
         
     Notes
     -----
     The covariance matrix measures how returns of different assets move together.
     """
-    if not isinstance(returns_matrix, np.ndarray):
-        returns_matrix = np.array(returns_matrix)
+    returns_matrix_arr = np.asarray(returns_matrix, dtype=np.float64)
         
-    cov_matrix = np.cov(returns_matrix, rowvar=False, ddof=1)
+    cov_matrix = np.cov(returns_matrix_arr, rowvar=False, ddof=1)
     
     return cov_matrix
 
 
-
-def correlation_matrix(returns_matrix: Union[List[List[float]], np.ndarray]) -> np.ndarray:
+def correlation_matrix(returns_matrix: ArrayLike) -> NDArray[np.float64]:
     """
     Calculate the correlation matrix of returns.
     
     Parameters
     ----------
-    returns_matrix : list of lists or np.ndarray
+    returns_matrix : array-like
         Matrix of returns where each column represents an asset
 
     Returns
     -------
-    np.ndarray or list of lists
+    ndarray
         Correlation matrix
         
     Notes
@@ -288,22 +276,25 @@ def correlation_matrix(returns_matrix: Union[List[List[float]], np.ndarray]) -> 
     The correlation matrix measures the strength of the relationship between
     returns of different assets, normalized to be between -1 and 1.
     """
-    if not isinstance(returns_matrix, np.ndarray):
-        returns_matrix = np.array(returns_matrix)
+    returns_matrix_arr = np.asarray(returns_matrix, dtype=np.float64)
         
-    corr_matrix = np.corrcoef(returns_matrix, rowvar=False)
+    corr_matrix = np.corrcoef(returns_matrix_arr, rowvar=False)
     
     return corr_matrix
 
 
-def conditional_value_at_risk(returns: Union[List[float], np.ndarray], confidence_level: float = 0.95,
-                             method: str = 'historical', current_value: float = 1.0) -> float:
+def conditional_value_at_risk(
+    returns: ArrayLike,
+    confidence_level: float = 0.95,
+    method: str = 'historical',
+    current_value: float = 1.0
+) -> float:
     """
     Calculate the Conditional Value-at-Risk (CVaR) of a portfolio.
     
     Parameters
     ----------
-    returns : list or np.ndarray
+    returns : array-like
         Array or list of returns
     confidence_level : float, default 0.95
         Confidence level for CVaR calculation (e.g., 0.95 for 95% confidence)
@@ -322,46 +313,47 @@ def conditional_value_at_risk(returns: Union[List[float], np.ndarray], confidenc
     CVaR, also known as Expected Shortfall, measures the expected loss given that
     the loss exceeds the VaR threshold. It provides a more conservative risk measure than VaR.
     """
-    if not isinstance(returns, np.ndarray):
-        returns = np.array(returns)
+    returns_arr = np.asarray(returns, dtype=np.float64)
+    cvar_value = 0.0
         
     if method == 'historical':
         var_percentile = 1 - confidence_level
-        var_threshold = np.percentile(returns, var_percentile * 100)
+        var_threshold = np.percentile(returns_arr, var_percentile * 100)
         
-        tail_returns = returns[returns <= var_threshold]
+        tail_returns = returns_arr[returns_arr <= var_threshold]
         
         if len(tail_returns) == 0:
             return 0.0
         
         cvar_return = np.mean(tail_returns)
-        cvar_value = current_value * -cvar_return
+        cvar_value = current_value * -float(cvar_return)
         
     elif method == 'parametric':
-        mean = np.mean(returns)
-        std = np.std(returns, ddof=1)
+        mean = float(np.mean(returns_arr))
+        std = float(np.std(returns_arr, ddof=1))
         
         z_score = stats.norm.ppf(1 - confidence_level)
-        pdf_z = stats.norm.pdf(z_score)
+        pdf_z = float(stats.norm.pdf(z_score))
         cdf_z = 1 - confidence_level
         
-        cvar_return = mean - std * pdf_z / cdf_z
-        cvar_value = current_value * -cvar_return 
+        # Restructured calculation to avoid typing issues
+        calc_result = mean - (std * pdf_z / cdf_z)
+        # Explicitly convert to float and calculate final value
+        cvar_value = current_value * -float(calc_result)
         
     else:
         raise ValueError("Method must be 'historical' or 'parametric'")
     
-    return max(0, cvar_value)
+    return float(max(0.0, cvar_value))
 
 
-
-def drawdown(returns: Union[List[float], np.ndarray], as_list: bool = False) -> Union[Tuple[np.ndarray, float, int, int], Tuple[List[float], float, int, int]]:
+def drawdown(returns: ArrayLike, as_list: bool = False) -> Tuple[Union[NDArray[np.float64], List[float]], float, int, int]:
     """
     Calculate the drawdown, maximum drawdown, and drawdown duration of returns.
     
     Parameters
     ----------
-    returns : list or np.ndarray
+    returns : array-like
         Array or list of returns
     as_list : bool, default False
         If True, returns the drawdowns as a list instead of numpy array
@@ -378,20 +370,19 @@ def drawdown(returns: Union[List[float], np.ndarray], as_list: bool = False) -> 
     -----
     Drawdown measures the decline from a historical peak in cumulative returns.
     """
-    if not isinstance(returns, np.ndarray):
-        returns = np.array(returns)
+    returns_arr = np.asarray(returns, dtype=np.float64)
         
-    cum_returns = (1 + returns).cumprod()
+    cum_returns = (1 + returns_arr).cumprod()
     
     running_max = np.maximum.accumulate(cum_returns)
     
     drawdowns = (cum_returns - running_max) / running_max
     
-    max_drawdown = np.min(drawdowns)
+    min_drawdown: float = float(np.min(drawdowns))
     end_idx = int(np.argmin(drawdowns))  
     
     start_idx = int(np.argmax(cum_returns[:end_idx])) if end_idx > 0 else 0  
     
     if as_list:
-        return cast(List[float], drawdowns.tolist()), float(-max_drawdown), start_idx, end_idx
-    return drawdowns, float(-max_drawdown), start_idx, end_idx
+        return drawdowns.tolist(), float(-min_drawdown), start_idx, end_idx
+    return drawdowns, float(-min_drawdown), start_idx, end_idx

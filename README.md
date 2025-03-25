@@ -2,10 +2,10 @@
 
 ![Pypulate Logo](docs/assets/logo.png)
 
-[![PyPI](https://img.shields.io/badge/pypi-v0.2.2-blue)](https://pypi.org/project/pypulate/)
+[![PyPI](https://img.shields.io/badge/pypi-v0.3.0-blue)](https://pypi.org/project/pypulate/)
 ![Python](https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C%203.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
-![Tests](https://img.shields.io/badge/tests-passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-100%25-brightgreen)
 ![Coverage](https://img.shields.io/badge/coverage-passing-brightgreen)
 ![Documentation](https://img.shields.io/badge/docs-latest-blue)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
@@ -17,11 +17,27 @@ Pypulate is a comprehensive Python framework designed for financial analysis, bu
 ## ✨ Features
 
 ### Parray (Pypulate Array)
+- **Preprocessing capabilities**:
+  - Normalization & scaling (L1/L2, min-max, robust scaling)
+  - Outlier detection & handling (z-score, IQR, winsorization)
+  - Missing value imputation (mean, median, forward/backward fill)
+  - Statistical transformations (log, power, tanh transforms)
+  - Signal filtering (Kalman, Butterworth, Savitzky-Golay)
+  - Performance optimization (GPU acceleration, parallel processing)
 - Technical indicators (30+ implementations)
 - Signal detection and pattern recognition
 - Time series transformations
 - Built-in filtering methods
 - Method chaining support
+
+### Data Processing
+- Normalization and scaling methods
+- Outlier detection and handling
+- Missing value imputation
+- Time series transformations
+- Statistical analysis tools
+- Correlation and covariance analysis
+- Stationarity and causality tests
 
 ### KPI (Key Performance Indicators)
 - Customer metrics (churn, retention, LTV)
@@ -69,6 +85,18 @@ Pypulate is a comprehensive Python framework designed for financial analysis, bu
 - Exposure at default calculation
 - Credit rating transition matrices
 
+### Asset Pricing
+- Capital Asset Pricing Model (CAPM)
+- Arbitrage Pricing Theory (APT)
+- Fama-French factor models (3-factor and 5-factor)
+- Black-Scholes option pricing
+- Implied volatility calculation
+- Binomial tree option pricing
+- Bond pricing and yield calculations
+- Duration and convexity analysis
+- Yield curve construction
+- Term structure models
+
 ## 🚀 Installation
 
 ```bash
@@ -77,22 +105,74 @@ pip install pypulate
 
 ## 🔧 Quick Start
 
-### Technical Analysis
+### Technical Analysis with Preprocessing
 ```python
 from pypulate import Parray
+import numpy as np
 
-# Create a price array
-prices = Parray([10, 11, 12, 11, 10, 9, 10, 11, 12, 13, 15, 11])
+# Create a price array with some outliers and missing values
+prices = Parray([10, 11, 12, np.nan, 10, 50, 10, 11, 12, 13, 15, np.nan, 8, 10, 14, 16])
 
-# Technical Analysis with method chaining
-result = (prices
+# Data Preprocessing Pipeline
+clean_prices = (prices
+    .fill_missing(method='forward')                  # Fill missing values
+    .remove_outliers(method='zscore', threshold=3.0) # Remove statistical outliers
+    .standardize()                                   # Z-score standardization
+)
+
+# Performance Optimization
+clean_prices.enable_parallel(num_workers=4)  # Enable parallel processing
+if Parray.is_gpu_available():
+    clean_prices.enable_gpu()                # Use GPU if available
+clean_prices.optimize_memory()               # Optimize memory usage
+
+# Technical Analysis with method chaining on cleaned data
+result = (clean_prices
     .sma(3)                    # Simple Moving Average
     .ema(3)                    # Exponential Moving Average
     .rsi(7)                    # Relative Strength Index
 )
 
 # Signal Detection
-golden_cross = prices.sma(5).crossover(prices.sma(10))
+golden_cross = clean_prices.sma(5).crossover(clean_prices.sma(10))
+```
+
+### More Preprocessing Examples
+```python
+from pypulate import Parray
+import numpy as np
+
+# Create sample data
+data = Parray(np.random.normal(0, 1, 1000))
+data_with_outliers = Parray([10, 11, 12, 11, 10, 9, 50, 11, 12, 13, -40, 11, 8, 10, 14, 16])
+
+# Normalization and Scaling
+normalized = data.normalize(method='l2')              # L2 normalization
+standardized = data.standardize()                     # Z-score standardization
+scaled = data.min_max_scale(feature_range=(0, 1))     # Min-max scaling
+robust_scaled = data.robust_scale(method='iqr')       # Robust scaling using IQR
+
+# Outlier Handling
+clean_data = data_with_outliers.remove_outliers(method='zscore', threshold=3.0)  # Remove outliers
+clipped_data = data_with_outliers.clip_outliers(lower_percentile=1.0, upper_percentile=99.0)
+winsorized = data_with_outliers.winsorize(limits=0.1)  # Winsorize at 10% on both ends
+
+# Data Transformations
+power_data = data.power_transform(method='yeo-johnson')  # Power transformation
+discretized = data.discretize(n_bins=5, strategy='quantile')  # Discretization
+
+# Signal Filtering
+kalman_filtered = data.kalman_filter(process_variance=1e-5, measurement_variance=1e-3)
+butter_filtered = data.butterworth_filter(cutoff=0.1, order=2, filter_type='lowpass')
+sg_filtered = data.savitzky_golay_filter(window_length=11, polyorder=3)
+
+# Method Chaining for Complex Pipelines
+result = (data_with_outliers
+    .fill_missing(method='median')          # Fill any missing values with median
+    .clip_outliers(lower_percentile=5.0, upper_percentile=95.0)  # Clip extreme values
+    .standardize()                          # Standardize to mean=0, std=1
+    .butterworth_filter(cutoff=0.1, order=3, filter_type='lowpass')  # Apply smoothing
+)
 ```
 
 ### Business KPIs
@@ -239,7 +319,51 @@ ecl = credit.expected_credit_loss(
 print(f"Expected Credit Loss: ${ecl['ecl']:.2f}")
 ```
 
+### Asset Pricing
+```python
+from pypulate.asset import capm, black_scholes, price_bond
+
+# CAPM Example
+result = capm(
+    risk_free_rate=0.03,
+    beta=1.2,
+    market_return=0.08
+)
+print(f"Expected Return: {result['expected_return']:.2%}")  # 9.00%
+
+# Black-Scholes Option Pricing
+option = black_scholes(
+    option_type='call',
+    underlying_price=100,
+    strike_price=100,
+    time_to_expiry=1.0,
+    risk_free_rate=0.05,
+    volatility=0.2
+)
+print(f"Call Option Price: ${option['price']:.2f}")  # $10.45
+
+# Bond Pricing
+bond = price_bond(
+    face_value=1000,
+    coupon_rate=0.05,
+    years_to_maturity=10,
+    yield_to_maturity=0.06,
+    frequency=2
+)
+print(f"Bond Price: ${bond['price']:.2f}")  # $925.68
+```
+
 ## 📊 Key Capabilities
+
+### Data Preprocessing
+- **Comprehensive preprocessing** methods for financial time series
+- **Outlier handling** with multiple detection methods (statistical, distance-based)
+- **Missing value imputation** strategies optimized for time series
+- **Normalization and scaling** to improve model performance
+- **Statistical transformations** to handle non-normal data distributions
+- **Signal filtering** to remove noise from financial data
+- **Performance optimization** with GPU acceleration and parallel processing
+- **Memory optimization** for handling large datasets
 
 ### Data Analysis
 - Time series analysis and transformations
@@ -276,17 +400,26 @@ print(f"Expected Credit Loss: ${ecl['ecl']:.2f}")
 - Risk-based loan pricing
 - Credit model validation
 
+### Asset Pricing and Derivatives
+- Equity pricing models
+- Option pricing and Greeks
+- Fixed income analysis
+- Yield curve modeling
+- Risk-neutral valuation
+
 ## 📚 Documentation
 
 Comprehensive documentation is available at [https://a111ir.github.io/pypulate](https://a111ir.github.io/pypulate) or in the docs directory:
 
 - [Getting Started Guide](https://a111ir.github.io/pypulate/user-guide/getting-started/)
 - [Parray Guide](https://a111ir.github.io/pypulate/user-guide/parray/)
+- [Preprocessing Guide](https://a111ir.github.io/pypulate/user-guide/preprocessing/)
 - [KPI Guide](https://a111ir.github.io/pypulate/user-guide/kpi/)
 - [Portfolio Guide](https://a111ir.github.io/pypulate/user-guide/portfolio/)
 - [Service Pricing Guide](https://a111ir.github.io/pypulate/user-guide/service-pricing/)
 - [Allocation Guide](https://a111ir.github.io/pypulate/user-guide/allocation/)
 - [Credit Scoring Guide](https://a111ir.github.io/pypulate/user-guide/credit-scoring/)
+- [Asset Pricing Guide](https://a111ir.github.io/pypulate/user-guide/asset-pricing/)
 
 ## 🤝 Contributing
 

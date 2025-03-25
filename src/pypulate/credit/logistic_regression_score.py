@@ -3,7 +3,7 @@ Logistic regression scoring for credit risk assessment.
 """
 
 import numpy as np
-from typing import Dict, Union, Any
+from typing import Dict, Any
 from numpy.typing import ArrayLike
 
 
@@ -31,7 +31,12 @@ def logistic_regression_score(coefficients: ArrayLike, features: ArrayLike,
     
     log_odds = np.dot(coefficients, features) + intercept
     
-    probability = 1 / (1 + np.exp(-log_odds))
+    if log_odds > 35: 
+        probability = 1.0
+    elif log_odds < -35:
+        probability = 0.0
+    else:
+        probability = 1 / (1 + np.exp(-log_odds))
     
     score = 850 - int(550 * probability)
     score = max(300, min(850, score))

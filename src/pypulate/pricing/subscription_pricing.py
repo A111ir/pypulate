@@ -51,7 +51,7 @@ def calculate_subscription_price(
     
     # Apply duration discount
     if duration_months > 1:
-        annual_discount = (1 - discount_rate) ** (duration_months / 12)
-        return monthly_price * duration_months * annual_discount
+        annual_discount = float((1 - discount_rate) ** (duration_months / 12))
+        return float(monthly_price * duration_months * annual_discount)
     
-    return monthly_price * duration_months 
+    return float(monthly_price * duration_months) 

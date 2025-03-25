@@ -4,7 +4,7 @@ Dynamic Pricing Module
 This module provides functions for calculating dynamic pricing adjustments.
 """
 
-from typing import Optional, Union, Callable, Dict
+from typing import Optional, Union, Callable, Dict, Any, TypeVar, cast
 import numpy as np
 
 def apply_dynamic_pricing(
@@ -54,6 +54,9 @@ def apply_dynamic_pricing(
         
     return adjusted_price
 
+# Define a type variable for the pricing function
+PricingFuncType = TypeVar('PricingFuncType', bound=Callable[..., float])
+
 class PricingRule:
     """
     A class for managing custom pricing rules.
@@ -66,7 +69,7 @@ class PricingRule:
     
     def __init__(self):
         """Initialize the PricingRule class."""
-        self._rules: Dict[str, Dict] = {}
+        self._rules: Dict[str, Dict[str, Union[Callable[..., float], str]]] = {}
     
     def add_rule(
         self,
@@ -86,12 +89,6 @@ class PricingRule:
         description : str, optional
             Description of the pricing rule
             
-        Examples
-        --------
-        >>> def holiday_pricing(base_price, holiday_multiplier):
-        ...     return base_price * holiday_multiplier
-        >>> rules = PricingRule()
-        >>> rules.add_rule('holiday', holiday_pricing, 'Apply holiday pricing multiplier')
         """
         self._rules[rule_name] = {
             'function': calculation_function,
@@ -101,8 +98,8 @@ class PricingRule:
     def apply_rule(
         self,
         rule_name: str,
-        *args,
-        **kwargs
+        *args: Any,
+        **kwargs: Any
     ) -> float:
         """
         Apply a custom pricing rule.
@@ -124,17 +121,12 @@ class PricingRule:
         KeyError
             If the specified rule_name doesn't exist
             
-        Examples
-        --------
-        >>> rules = PricingRule()
-        >>> rules.add_rule('holiday', lambda price, mult: price * mult)
-        >>> rules.apply_rule('holiday', 100.0, 1.2)
-        120.0
         """
         if rule_name not in self._rules:
             raise KeyError(f"Custom pricing rule '{rule_name}' not found")
             
-        return self._rules[rule_name]['function'](*args, **kwargs)
+        func = cast(Callable[..., float], self._rules[rule_name]['function'])
+        return func(*args, **kwargs)
     
     def get_rule_description(self, rule_name: str) -> str:
         """
@@ -158,7 +150,7 @@ class PricingRule:
         if rule_name not in self._rules:
             raise KeyError(f"Custom pricing rule '{rule_name}' not found")
             
-        return self._rules[rule_name]['description']
+        return cast(str, self._rules[rule_name]['description'])
     
     def list_rules(self) -> Dict[str, str]:
         """
@@ -169,4 +161,4 @@ class PricingRule:
         dict
             Dictionary of rule names and their descriptions
         """
-        return {name: rule['description'] for name, rule in self._rules.items()} 
+        return {name: cast(str, rule['description']) for name, rule in self._rules.items()} 

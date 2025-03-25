@@ -6,15 +6,19 @@ for financial time series data.
 """
 
 import numpy as np
-from typing import Tuple, Optional, Union, Callable
+from typing import Optional, Callable
+from numpy.typing import NDArray, ArrayLike
+
+StateFunction = Callable[[NDArray[np.float64]], NDArray[np.float64]]
+JacobianFunction = Callable[[NDArray[np.float64]], NDArray[np.float64]]
 
 def kalman_filter(
-    data: np.ndarray,
+    data: ArrayLike,
     process_variance: float = 1e-5,
     measurement_variance: float = 1e-3,
     initial_state: Optional[float] = None,
     initial_covariance: float = 1.0
-) -> np.ndarray:
+) -> NDArray[np.float64]:
     """
     Apply a standard Kalman filter to a time series.
     
@@ -24,7 +28,7 @@ def kalman_filter(
     
     Parameters
     ----------
-    data : np.ndarray
+    data : array_like
         Input time series data
     process_variance : float, default 1e-5
         Process noise variance (Q)
@@ -40,27 +44,17 @@ def kalman_filter(
     np.ndarray
         Filtered time series
         
-    Examples
-    --------
-    >>> import numpy as np
-    >>> from pypulate.filters import kalman_filter
-    >>> # Create noisy data
-    >>> x = np.linspace(0, 10, 100)
-    >>> true_signal = np.sin(x)
-    >>> noisy_signal = true_signal + np.random.normal(0, 0.1, len(x))
-    >>> # Apply Kalman filter
-    >>> filtered_signal = kalman_filter(noisy_signal)
     """
     # Convert to numpy array if not already
-    data = np.asarray(data)
-    n = len(data)
+    data_array = np.asarray(data, dtype=np.float64)
+    n = len(data_array)
     
     # Initialize state and filtered data
-    filtered_data = np.zeros(n)
+    filtered_data = np.zeros(n, dtype=np.float64)
     
     # Initialize state estimate and covariance
     if initial_state is None:
-        state_estimate = data[0]
+        state_estimate = float(data_array[0])
     else:
         state_estimate = initial_state
     
@@ -79,7 +73,7 @@ def kalman_filter(
         
         # Update step
         kalman_gain = predicted_covariance / (predicted_covariance + R)
-        state_estimate = predicted_state + kalman_gain * (data[i] - predicted_state)
+        state_estimate = predicted_state + kalman_gain * (data_array[i] - predicted_state)
         estimate_covariance = (1 - kalman_gain) * predicted_covariance
         
         # Store filtered value
@@ -88,16 +82,16 @@ def kalman_filter(
     return filtered_data
 
 def extended_kalman_filter(
-    data: np.ndarray,
-    state_transition_func: Callable,
-    observation_func: Callable,
-    process_jacobian_func: Callable,
-    observation_jacobian_func: Callable,
-    process_covariance: np.ndarray,
-    observation_covariance: np.ndarray,
-    initial_state: Optional[np.ndarray] = None,
-    initial_covariance: Optional[np.ndarray] = None
-) -> np.ndarray:
+    data: ArrayLike,
+    state_transition_func: StateFunction,
+    observation_func: StateFunction,
+    process_jacobian_func: JacobianFunction,
+    observation_jacobian_func: JacobianFunction,
+    process_covariance: NDArray[np.float64],
+    observation_covariance: NDArray[np.float64],
+    initial_state: Optional[NDArray[np.float64]] = None,
+    initial_covariance: Optional[NDArray[np.float64]] = None
+) -> NDArray[np.float64]:
     """
     Apply an Extended Kalman Filter (EKF) to a time series with non-linear dynamics.
     
@@ -107,7 +101,7 @@ def extended_kalman_filter(
     
     Parameters
     ----------
-    data : np.ndarray
+    data : array_like
         Input time series data (observations)
     state_transition_func : callable
         Function that computes the state transition (f)
@@ -165,25 +159,25 @@ def extended_kalman_filter(
     ... )
     """
     # Convert to numpy array if not already
-    data = np.asarray(data)
-    n = len(data)
+    data_array = np.asarray(data, dtype=np.float64)
+    n = len(data_array)
     
     # Determine state dimension from process covariance
     state_dim = process_covariance.shape[0]
     
     # Initialize state and filtered data
     if initial_state is None:
-        state_estimate = np.zeros(state_dim)
+        state_estimate = np.zeros(state_dim, dtype=np.float64)
     else:
-        state_estimate = initial_state
+        state_estimate = initial_state.copy()
     
     if initial_covariance is None:
-        estimate_covariance = np.eye(state_dim)
+        estimate_covariance = np.eye(state_dim, dtype=np.float64)
     else:
-        estimate_covariance = initial_covariance
+        estimate_covariance = initial_covariance.copy()
     
     # Prepare output array
-    filtered_states = np.zeros((n, state_dim))
+    filtered_states = np.zeros((n, state_dim), dtype=np.float64)
     
     # Apply Extended Kalman Filter
     for i in range(n):
@@ -196,7 +190,9 @@ def extended_kalman_filter(
         predicted_measurement = observation_func(predicted_state)
         H = observation_jacobian_func(predicted_state)  # Jacobian of observation
         
-        innovation = data[i] - predicted_measurement
+        # Convert scalar to array if needed
+        current_measurement = np.atleast_1d(data_array[i])
+        innovation = current_measurement - predicted_measurement
         innovation_covariance = H @ predicted_covariance @ H.T + observation_covariance
         
         kalman_gain = predicted_covariance @ H.T @ np.linalg.inv(innovation_covariance)
@@ -210,17 +206,17 @@ def extended_kalman_filter(
     return filtered_states
 
 def unscented_kalman_filter(
-    data: np.ndarray,
-    state_transition_func: Callable,
-    observation_func: Callable,
-    process_covariance: np.ndarray,
-    observation_covariance: np.ndarray,
-    initial_state: Optional[np.ndarray] = None,
-    initial_covariance: Optional[np.ndarray] = None,
+    data: ArrayLike,
+    state_transition_func: StateFunction,
+    observation_func: StateFunction,
+    process_covariance: NDArray[np.float64],
+    observation_covariance: NDArray[np.float64],
+    initial_state: Optional[NDArray[np.float64]] = None,
+    initial_covariance: Optional[NDArray[np.float64]] = None,
     alpha: float = 1e-3,
     beta: float = 2.0,
     kappa: float = 0.0
-) -> np.ndarray:
+) -> NDArray[np.float64]:
     """
     Apply an Unscented Kalman Filter (UKF) to a time series with non-linear dynamics.
     
@@ -230,7 +226,7 @@ def unscented_kalman_filter(
     
     Parameters
     ----------
-    data : np.ndarray
+    data : array_like
         Input time series data (observations)
     state_transition_func : callable
         Function that computes the state transition
@@ -283,33 +279,30 @@ def unscented_kalman_filter(
     ... )
     """
     # Convert to numpy array if not already
-    data = np.asarray(data)
-    n = len(data)
+    data_array = np.asarray(data, dtype=np.float64)
+    n = len(data_array)
     
     # Determine state dimension from process covariance
     state_dim = process_covariance.shape[0]
     
     # Initialize state and filtered data
     if initial_state is None:
-        state_estimate = np.zeros(state_dim)
+        state_estimate = np.zeros(state_dim, dtype=np.float64)
     else:
-        state_estimate = initial_state
+        state_estimate = initial_state.copy()
     
     if initial_covariance is None:
-        estimate_covariance = np.eye(state_dim)
+        estimate_covariance = np.eye(state_dim, dtype=np.float64)
     else:
-        estimate_covariance = initial_covariance
+        estimate_covariance = initial_covariance.copy()
     
-    # Prepare output array
-    filtered_states = np.zeros((n, state_dim))
+    filtered_states = np.zeros((n, state_dim), dtype=np.float64)
     
-    # UKF parameters
     lambda_param = alpha**2 * (state_dim + kappa) - state_dim
     n_sigma_points = 2 * state_dim + 1
     
-    # Weights for mean and covariance
-    weights_mean = np.zeros(n_sigma_points)
-    weights_cov = np.zeros(n_sigma_points)
+    weights_mean = np.zeros(n_sigma_points, dtype=np.float64)
+    weights_cov = np.zeros(n_sigma_points, dtype=np.float64)
     
     weights_mean[0] = lambda_param / (state_dim + lambda_param)
     weights_cov[0] = weights_mean[0] + (1 - alpha**2 + beta)
@@ -318,25 +311,20 @@ def unscented_kalman_filter(
         weights_mean[i] = 1 / (2 * (state_dim + lambda_param))
         weights_cov[i] = weights_mean[i]
     
-    # Apply Unscented Kalman Filter
     for i in range(n):
-        # Generate sigma points
-        sigma_points = np.zeros((n_sigma_points, state_dim))
+        sigma_points = np.zeros((n_sigma_points, state_dim), dtype=np.float64)
         sigma_points[0] = state_estimate
         
-        # Calculate square root of covariance matrix
         L = np.linalg.cholesky((state_dim + lambda_param) * estimate_covariance)
         
         for j in range(state_dim):
             sigma_points[j+1] = state_estimate + L[j]
             sigma_points[j+1+state_dim] = state_estimate - L[j]
         
-        # Prediction step
-        # Propagate sigma points through state transition function
+
         predicted_sigma_points = np.array([state_transition_func(s) for s in sigma_points])
         
-        # Calculate predicted mean and covariance
-        predicted_state = np.zeros(state_dim)
+        predicted_state = np.zeros(state_dim, dtype=np.float64)
         for j in range(n_sigma_points):
             predicted_state += weights_mean[j] * predicted_sigma_points[j]
         
@@ -345,17 +333,15 @@ def unscented_kalman_filter(
             diff = predicted_sigma_points[j] - predicted_state
             predicted_covariance += weights_cov[j] * np.outer(diff, diff)
         
-        # Propagate sigma points through observation function
         predicted_measurements = np.array([observation_func(s) for s in predicted_sigma_points])
         
-        # Calculate predicted measurement mean and covariance
         measurement_dim = predicted_measurements[0].shape[0]
-        predicted_measurement = np.zeros(measurement_dim)
+        predicted_measurement = np.zeros(measurement_dim, dtype=np.float64)
         for j in range(n_sigma_points):
             predicted_measurement += weights_mean[j] * predicted_measurements[j]
         
         measurement_covariance = observation_covariance.copy()
-        cross_correlation = np.zeros((state_dim, measurement_dim))
+        cross_correlation = np.zeros((state_dim, measurement_dim), dtype=np.float64)
         
         for j in range(n_sigma_points):
             diff_state = predicted_sigma_points[j] - predicted_state
@@ -364,14 +350,13 @@ def unscented_kalman_filter(
             measurement_covariance += weights_cov[j] * np.outer(diff_meas, diff_meas)
             cross_correlation += weights_cov[j] * np.outer(diff_state, diff_meas)
         
-        # Update step
         kalman_gain = cross_correlation @ np.linalg.inv(measurement_covariance)
         
-        innovation = data[i] - predicted_measurement
+        current_measurement = np.atleast_1d(data_array[i])
+        innovation = current_measurement - predicted_measurement
         state_estimate = predicted_state + kalman_gain @ innovation
         estimate_covariance = predicted_covariance - kalman_gain @ measurement_covariance @ kalman_gain.T
         
-        # Store filtered state
         filtered_states[i] = state_estimate
     
     return filtered_states 

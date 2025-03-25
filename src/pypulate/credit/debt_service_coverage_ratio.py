@@ -1,9 +1,9 @@
 """
 Debt Service Coverage Ratio (DSCR) calculation.
 """
+from typing import Union
 
-
-def debt_service_coverage_ratio(net_operating_income, total_debt_service) -> dict[str, float | str]:
+def debt_service_coverage_ratio(net_operating_income, total_debt_service) -> dict[str, Union[float, str]]:
     """
     Calculate Debt Service Coverage Ratio (DSCR).
     

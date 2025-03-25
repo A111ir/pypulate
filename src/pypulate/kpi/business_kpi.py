@@ -6,14 +6,33 @@ commonly used in SaaS and subscription-based businesses.
 """
 
 import numpy as np
-from typing import Union, Optional, Tuple, List, Dict
-from ..dtypes.parray import Parray
+from typing import Union, Optional, cast
+from numpy.typing import ArrayLike, NDArray
+
+
+def _ensure_array(value: ArrayLike) -> NDArray[np.float64]:
+    """
+    Ensure the input is either a scalar or numpy array.
+    
+    Parameters
+    ----------
+    value : array-like
+        Input value to convert
+        
+    Returns
+    -------
+    numpy.ndarray
+        Converted value as numpy array
+    """
+    if np.isscalar(value):
+        return np.array([float(value)], dtype=np.float64)
+    return np.array(value, dtype=np.float64)
 
 def churn_rate(
-    customers_start: Union[int, float, np.ndarray, list], 
-    customers_end: Union[int, float, np.ndarray, list], 
-    new_customers: Union[int, float, np.ndarray, list]
-) -> Union[float, np.ndarray]:
+    customers_start: ArrayLike, 
+    customers_end: ArrayLike, 
+    new_customers: ArrayLike
+) -> Union[float, NDArray[np.float64]]:
     """
     Calculate customer churn rate.
     
@@ -22,11 +41,11 @@ def churn_rate(
     
     Parameters
     ----------
-    customers_start : int, float, array-like
+    customers_start : array-like
         Number of customers at the start of the period
-    customers_end : int, float, array-like
+    customers_end : array-like
         Number of customers at the end of the period
-    new_customers : int, float, array-like
+    new_customers : array-like
         Number of new customers acquired during the period
         
     Returns
@@ -39,31 +58,29 @@ def churn_rate(
     >>> churn_rate(100, 90, 10)
     20.0
     """
-    if isinstance(customers_start, list):
-        customers_start = np.array(customers_start)
-    if isinstance(customers_end, list):
-        customers_end = np.array(customers_end)
-    if isinstance(new_customers, list):
-        new_customers = np.array(new_customers)
+    customers_start_arr = _ensure_array(customers_start)
+    customers_end_arr = _ensure_array(customers_end)
+    new_customers_arr = _ensure_array(new_customers)
     
-    lost_customers = customers_start + new_customers - customers_end
+    lost_customers = customers_start_arr + new_customers_arr - customers_end_arr
     
-    if np.isscalar(customers_start):
-        if customers_start == 0:
-            return 0.0
-        return (lost_customers / customers_start) * 100.0
+    result = np.zeros_like(customers_start_arr, dtype=np.float64)
     
-    result = np.zeros_like(customers_start, dtype=float)
-    non_zero_mask = customers_start != 0
-    result[non_zero_mask] = (lost_customers[non_zero_mask] / customers_start[non_zero_mask]) * 100.0
+    non_zero_mask = customers_start_arr != 0
+    result[non_zero_mask] = (lost_customers[non_zero_mask] / customers_start_arr[non_zero_mask]) * 100.0
+    
+    if (np.isscalar(customers_start) and 
+        np.isscalar(customers_end) and 
+        np.isscalar(new_customers)):
+        return float(result[0])
     
     return result
 
 def retention_rate(
-    customers_start: Union[int, float, np.ndarray, list], 
-    customers_end: Union[int, float, np.ndarray, list], 
-    new_customers: Union[int, float, np.ndarray, list]
-) -> Union[float, np.ndarray]:
+    customers_start: ArrayLike, 
+    customers_end: ArrayLike, 
+    new_customers: ArrayLike
+) -> Union[float, NDArray[np.float64]]:
     """
     Calculate customer retention rate.
     
@@ -72,11 +89,11 @@ def retention_rate(
     
     Parameters
     ----------
-    customers_start : int, float, array-like
+    customers_start : array-like
         Number of customers at the start of the period
-    customers_end : int, float, array-like
+    customers_end : array-like
         Number of customers at the end of the period
-    new_customers : int, float, array-like
+    new_customers : array-like
         Number of new customers acquired during the period
         
     Returns
@@ -89,26 +106,23 @@ def retention_rate(
     >>> retention_rate(100, 90, 10)
     80.0
     """
-    if isinstance(customers_start, list):
-        customers_start = np.array(customers_start)
-    if isinstance(customers_end, list):
-        customers_end = np.array(customers_end)
-    if isinstance(new_customers, list):
-        new_customers = np.array(new_customers)
+    customers_start_arr = _ensure_array(customers_start)
+    customers_end_arr = _ensure_array(customers_end)
+    new_customers_arr = _ensure_array(new_customers)
     
-    churn = churn_rate(customers_start, customers_end, new_customers)
+    churn = churn_rate(customers_start_arr, customers_end_arr, new_customers_arr)
     
     if np.isscalar(churn):
         return 100.0 - churn
-    else:
-        return 100.0 - churn
+    
+    return 100.0 - churn
 
 def customer_lifetime_value(
-    avg_revenue_per_customer: Union[int, float],
-    gross_margin: Union[int, float],
-    churn_rate_value: Union[int, float],
-    discount_rate: Union[int, float] = 10.0
-) -> float:
+    avg_revenue_per_customer: ArrayLike,
+    gross_margin: ArrayLike,
+    churn_rate_value: ArrayLike,
+    discount_rate: ArrayLike = 10.0
+) -> Union[float, NDArray[np.float64]]:
     """
     Calculate Customer Lifetime Value (CLV).
     
@@ -116,46 +130,61 @@ def customer_lifetime_value(
     
     Parameters
     ----------
-    avg_revenue_per_customer : int or float
+    avg_revenue_per_customer : array-like
         Average revenue per customer per period (e.g., monthly)
-    gross_margin : int or float
+    gross_margin : array-like
         Gross margin percentage (0-100)
-    churn_rate_value : int or float
+    churn_rate_value : array-like
         Churn rate percentage (0-100)
-    discount_rate : int or float, default 10.0
+    discount_rate : array-like, default 10.0
         Annual discount rate for future cash flows (0-100)
         
     Returns
     -------
-    float
+    float or numpy.ndarray
         Customer Lifetime Value
         
     Examples
     --------
     >>> customer_lifetime_value(100, 70, 5, 10)
-    466.66
+    466.67
     """
-    gross_margin_decimal = gross_margin / 100.0
-    churn_rate_decimal = churn_rate_value / 100.0
-    discount_rate_decimal = discount_rate / 100.0
+    avg_revenue = _ensure_array(avg_revenue_per_customer)
+    gross_margin_arr = _ensure_array(gross_margin)
+    churn_rate_arr = _ensure_array(churn_rate_value)
+    discount_rate_arr = _ensure_array(discount_rate)
     
-    avg_customer_lifespan = 1 / churn_rate_decimal if churn_rate_decimal > 0 else float('inf')
+    gross_margin_decimal = gross_margin_arr / 100.0
+    churn_rate_decimal = churn_rate_arr / 100.0
+    discount_rate_decimal = discount_rate_arr / 100.0
     
-    clv = (avg_revenue_per_customer * gross_margin_decimal) / (churn_rate_decimal + discount_rate_decimal)
+    result = np.zeros_like(avg_revenue, dtype=np.float64)
     
-    if churn_rate_decimal == 0:
+    non_zero_churn = churn_rate_decimal > 0
+    result[non_zero_churn] = (avg_revenue[non_zero_churn] * gross_margin_decimal[non_zero_churn]) / (
+        churn_rate_decimal[non_zero_churn] + discount_rate_decimal[non_zero_churn]
+    )
+    
+    zero_churn = ~non_zero_churn
+    if np.any(zero_churn):
         max_periods = 240
-        clv = 0
         for i in range(max_periods):
-            clv += (avg_revenue_per_customer * gross_margin_decimal) / ((1 + discount_rate_decimal/12) ** i)
+            discount_factor = np.power(1 + discount_rate_decimal[zero_churn]/12, i)
+            result[zero_churn] += (avg_revenue[zero_churn] * gross_margin_decimal[zero_churn]) / discount_factor
     
-    return clv
+    if (np.isscalar(avg_revenue_per_customer) and 
+        np.isscalar(gross_margin) and 
+        np.isscalar(churn_rate_value) and 
+        np.isscalar(discount_rate)):
+        return float(result[0])
+    
+    return result
 
 def customer_acquisition_cost(
-    marketing_costs: Union[int, float, np.ndarray, list],
-    sales_costs: Union[int, float, np.ndarray, list],
-    new_customers: Union[int, float, np.ndarray, list]
-) -> Union[float, np.ndarray]:
+    marketing_costs: ArrayLike,
+    sales_costs: ArrayLike,
+    new_customers: ArrayLike
+) -> Union[float, NDArray[np.float64]]:
     """
     Calculate Customer Acquisition Cost (CAC).
     
@@ -163,11 +192,11 @@ def customer_acquisition_cost(
     
     Parameters
     ----------
-    marketing_costs : int, float, array-like
+    marketing_costs : array-like
         Total marketing costs for the period
-    sales_costs : int, float, array-like
+    sales_costs : array-like
         Total sales costs for the period
-    new_customers : int, float, array-like
+    new_customers : array-like
         Number of new customers acquired during the period
         
     Returns
@@ -180,30 +209,28 @@ def customer_acquisition_cost(
     >>> customer_acquisition_cost(5000, 3000, 100)
     80.0
     """
-    if isinstance(marketing_costs, list):
-        marketing_costs = np.array(marketing_costs)
-    if isinstance(sales_costs, list):
-        sales_costs = np.array(sales_costs)
-    if isinstance(new_customers, list):
-        new_customers = np.array(new_customers)
+    marketing_costs_arr = _ensure_array(marketing_costs)
+    sales_costs_arr = _ensure_array(sales_costs)
+    new_customers_arr = _ensure_array(new_customers)
     
-    total_costs = marketing_costs + sales_costs
+    total_costs = marketing_costs_arr + sales_costs_arr
     
-    if np.isscalar(new_customers):
-        if new_customers == 0:
-            return float('inf')
-        return total_costs / new_customers
+    result = np.full_like(new_customers_arr, np.inf, dtype=np.float64)
     
-    result = np.full_like(new_customers, float('inf'), dtype=float)
-    non_zero_mask = new_customers != 0
-    result[non_zero_mask] = total_costs[non_zero_mask] / new_customers[non_zero_mask]
+    non_zero_mask = new_customers_arr != 0
+    result[non_zero_mask] = total_costs[non_zero_mask] / new_customers_arr[non_zero_mask]
+    
+    if (np.isscalar(marketing_costs) and 
+        np.isscalar(sales_costs) and 
+        np.isscalar(new_customers)):
+        return float(result[0])
     
     return result
 
 def monthly_recurring_revenue(
-    paying_customers: Union[int, float, np.ndarray, list],
-    avg_revenue_per_customer: Union[int, float, np.ndarray, list]
-) -> Union[float, np.ndarray]:
+    paying_customers: ArrayLike,
+    avg_revenue_per_customer: ArrayLike
+) -> Union[float, NDArray[np.float64]]:
     """
     Calculate Monthly Recurring Revenue (MRR).
     
@@ -211,9 +238,9 @@ def monthly_recurring_revenue(
     
     Parameters
     ----------
-    paying_customers : int, float, array-like
+    paying_customers : array-like
         Number of paying customers
-    avg_revenue_per_customer : int, float, array-like
+    avg_revenue_per_customer : array-like
         Average revenue per customer per month
         
     Returns
@@ -226,17 +253,21 @@ def monthly_recurring_revenue(
     >>> monthly_recurring_revenue(100, 50)
     5000.0
     """
-    if isinstance(paying_customers, list):
-        paying_customers = np.array(paying_customers)
-    if isinstance(avg_revenue_per_customer, list):
-        avg_revenue_per_customer = np.array(avg_revenue_per_customer)
+    paying_customers_arr = _ensure_array(paying_customers)
+    avg_revenue_per_customer_arr = _ensure_array(avg_revenue_per_customer)
     
-    return paying_customers * avg_revenue_per_customer
+    result = paying_customers_arr * avg_revenue_per_customer_arr
+    
+    if (np.isscalar(paying_customers) and 
+        np.isscalar(avg_revenue_per_customer)):
+        return float(result[0])
+    
+    return result
 
 def annual_recurring_revenue(
-    paying_customers: Union[int, float],
-    avg_revenue_per_customer: Union[int, float]
-) -> float:
+    paying_customers: ArrayLike,
+    avg_revenue_per_customer: ArrayLike
+) -> Union[float, NDArray[np.float64]]:
     """
     Calculate Annual Recurring Revenue (ARR).
     
@@ -244,14 +275,14 @@ def annual_recurring_revenue(
     
     Parameters
     ----------
-    paying_customers : int or float
+    paying_customers : array-like
         Number of paying customers
-    avg_revenue_per_customer : int or float
+    avg_revenue_per_customer : array-like
         Average revenue per customer per month
         
     Returns
     -------
-    float
+    float or numpy.ndarray
         Annual Recurring Revenue
         
     Examples
@@ -259,13 +290,18 @@ def annual_recurring_revenue(
     >>> annual_recurring_revenue(100, 50)
     60000.0
     """
-    return monthly_recurring_revenue(paying_customers, avg_revenue_per_customer) * 12
+    mrr = monthly_recurring_revenue(paying_customers, avg_revenue_per_customer)
+    
+    if np.isscalar(mrr):
+        return mrr * 12.0
+    
+    return mrr * 12.0
 
 def net_promoter_score(
-    promoters: Union[int, float, np.ndarray, list],
-    detractors: Union[int, float, np.ndarray, list],
-    total_respondents: Union[int, float, np.ndarray, list]
-) -> Union[float, np.ndarray]:
+    promoters: ArrayLike,
+    detractors: ArrayLike,
+    total_respondents: ArrayLike
+) -> Union[float, NDArray[np.float64]]:
     """
     Calculate Net Promoter Score (NPS).
     
@@ -273,11 +309,11 @@ def net_promoter_score(
     
     Parameters
     ----------
-    promoters : int, float, array-like
+    promoters : array-like
         Number of promoters (customers who rated 9-10)
-    detractors : int, float, array-like
+    detractors : array-like
         Number of detractors (customers who rated 0-6)
-    total_respondents : int, float, array-like
+    total_respondents : array-like
         Total number of survey respondents
         
     Returns
@@ -290,40 +326,34 @@ def net_promoter_score(
     >>> net_promoter_score(70, 10, 100)
     60.0
     """
-    if isinstance(promoters, list):
-        promoters = np.array(promoters)
-    if isinstance(detractors, list):
-        detractors = np.array(detractors)
-    if isinstance(total_respondents, list):
-        total_respondents = np.array(total_respondents)
+    promoters_arr = _ensure_array(promoters)
+    detractors_arr = _ensure_array(detractors)
+    total_respondents_arr = _ensure_array(total_respondents)
     
-    if np.isscalar(total_respondents):
-        if total_respondents == 0:
-            return 0.0
-        
-        promoters_percent = (promoters / total_respondents) * 100
-        detractors_percent = (detractors / total_respondents) * 100
-        
-        return promoters_percent - detractors_percent
+    result = np.zeros_like(total_respondents_arr, dtype=np.float64)
     
-    result = np.zeros_like(total_respondents, dtype=float)
-    non_zero_mask = total_respondents != 0
+    non_zero_mask = total_respondents_arr != 0
     
-    promoters_percent = np.zeros_like(total_respondents, dtype=float)
-    detractors_percent = np.zeros_like(total_respondents, dtype=float)
+    promoters_percent = np.zeros_like(total_respondents_arr, dtype=np.float64)
+    detractors_percent = np.zeros_like(total_respondents_arr, dtype=np.float64)
     
-    promoters_percent[non_zero_mask] = (promoters[non_zero_mask] / total_respondents[non_zero_mask]) * 100
-    detractors_percent[non_zero_mask] = (detractors[non_zero_mask] / total_respondents[non_zero_mask]) * 100
+    promoters_percent[non_zero_mask] = (promoters_arr[non_zero_mask] / total_respondents_arr[non_zero_mask]) * 100.0
+    detractors_percent[non_zero_mask] = (detractors_arr[non_zero_mask] / total_respondents_arr[non_zero_mask]) * 100.0
     
     result = promoters_percent - detractors_percent
+    
+    if (np.isscalar(promoters) and 
+        np.isscalar(detractors) and 
+        np.isscalar(total_respondents)):
+        return float(result[0])
     
     return result
 
 def revenue_churn_rate(
-    revenue_start: Union[int, float, np.ndarray, list],
-    revenue_end: Union[int, float, np.ndarray, list],
-    new_revenue: Union[int, float, np.ndarray, list]
-) -> Union[float, np.ndarray]:
+    revenue_start: ArrayLike,
+    revenue_end: ArrayLike,
+    new_revenue: ArrayLike
+) -> Union[float, NDArray[np.float64]]:
     """
     Calculate Revenue Churn Rate.
     
@@ -331,11 +361,11 @@ def revenue_churn_rate(
     
     Parameters
     ----------
-    revenue_start : int, float, array-like
+    revenue_start : array-like
         Revenue at the start of the period
-    revenue_end : int, float, array-like
+    revenue_end : array-like
         Revenue at the end of the period
-    new_revenue : int, float, array-like
+    new_revenue : array-like
         New revenue acquired during the period
         
     Returns
@@ -348,31 +378,29 @@ def revenue_churn_rate(
     >>> revenue_churn_rate(10000, 9500, 1000)
     15.0
     """
-    if isinstance(revenue_start, list):
-        revenue_start = np.array(revenue_start)
-    if isinstance(revenue_end, list):
-        revenue_end = np.array(revenue_end)
-    if isinstance(new_revenue, list):
-        new_revenue = np.array(new_revenue)
+    revenue_start_arr = _ensure_array(revenue_start)
+    revenue_end_arr = _ensure_array(revenue_end)
+    new_revenue_arr = _ensure_array(new_revenue)
     
-    lost_revenue = revenue_start + new_revenue - revenue_end
+    lost_revenue = revenue_start_arr + new_revenue_arr - revenue_end_arr
     
-    if np.isscalar(revenue_start):
-        if revenue_start == 0:
-            return 0.0
-        return (lost_revenue / revenue_start) * 100.0
+    result = np.zeros_like(revenue_start_arr, dtype=np.float64)
     
-    result = np.zeros_like(revenue_start, dtype=float)
-    non_zero_mask = revenue_start != 0
-    result[non_zero_mask] = (lost_revenue[non_zero_mask] / revenue_start[non_zero_mask]) * 100.0
+    non_zero_mask = revenue_start_arr != 0
+    result[non_zero_mask] = (lost_revenue[non_zero_mask] / revenue_start_arr[non_zero_mask]) * 100.0
+    
+    if (np.isscalar(revenue_start) and 
+        np.isscalar(revenue_end) and 
+        np.isscalar(new_revenue)):
+        return float(result[0])
     
     return result
 
 def expansion_revenue_rate(
-    upsell_revenue: Union[int, float],
-    cross_sell_revenue: Union[int, float],
-    revenue_start: Union[int, float]
-) -> float:
+    upsell_revenue: ArrayLike,
+    cross_sell_revenue: ArrayLike,
+    revenue_start: ArrayLike
+) -> Union[float, NDArray[np.float64]]:
     """
     Calculate Expansion Revenue Rate.
     
@@ -380,16 +408,16 @@ def expansion_revenue_rate(
     
     Parameters
     ----------
-    upsell_revenue : int or float
+    upsell_revenue : array-like
         Revenue from upselling to existing customers
-    cross_sell_revenue : int or float
+    cross_sell_revenue : array-like
         Revenue from cross-selling to existing customers
-    revenue_start : int or float
+    revenue_start : array-like
         Revenue at the start of the period
         
     Returns
     -------
-    float
+    float or numpy.ndarray
         Expansion Revenue Rate as a percentage
         
     Examples
@@ -397,17 +425,28 @@ def expansion_revenue_rate(
     >>> expansion_revenue_rate(1000, 500, 10000)
     15.0
     """
-    expansion_revenue = upsell_revenue + cross_sell_revenue
+    upsell_revenue_arr = _ensure_array(upsell_revenue)
+    cross_sell_revenue_arr = _ensure_array(cross_sell_revenue)
+    revenue_start_arr = _ensure_array(revenue_start)
     
-    if revenue_start == 0:
-        return 0.0
+    expansion_revenue = upsell_revenue_arr + cross_sell_revenue_arr
     
-    return (expansion_revenue / revenue_start) * 100.0
+    result = np.zeros_like(revenue_start_arr, dtype=np.float64)
+    
+    non_zero_mask = revenue_start_arr != 0
+    result[non_zero_mask] = (expansion_revenue[non_zero_mask] / revenue_start_arr[non_zero_mask]) * 100.0
+    
+    if (np.isscalar(upsell_revenue) and 
+        np.isscalar(cross_sell_revenue) and 
+        np.isscalar(revenue_start)):
+        return float(result[0])
+    
+    return result
 
 def ltv_cac_ratio(
-    ltv: Union[int, float],
-    cac: Union[int, float]
-) -> float:
+    ltv: ArrayLike,
+    cac: ArrayLike
+) -> Union[float, NDArray[np.float64]]:
     """
     Calculate LTV:CAC Ratio.
     
@@ -415,14 +454,14 @@ def ltv_cac_ratio(
     
     Parameters
     ----------
-    ltv : int or float
+    ltv : array-like
         Customer Lifetime Value
-    cac : int or float
+    cac : array-like
         Customer Acquisition Cost
         
     Returns
     -------
-    float
+    float or numpy.ndarray
         LTV:CAC Ratio
         
     Examples
@@ -430,16 +469,24 @@ def ltv_cac_ratio(
     >>> ltv_cac_ratio(1000, 200)
     5.0
     """
-    if cac == 0:
-        return float('inf')
+    ltv_arr = _ensure_array(ltv)
+    cac_arr = _ensure_array(cac)
     
-    return ltv / cac
+    result = np.full_like(cac_arr, np.inf, dtype=np.float64)
+    
+    non_zero_mask = cac_arr != 0
+    result[non_zero_mask] = ltv_arr[non_zero_mask] / cac_arr[non_zero_mask]
+    
+    if (np.isscalar(ltv) and np.isscalar(cac)):
+        return float(result[0])
+    
+    return result
 
 def payback_period(
-    cac: Union[int, float],
-    avg_monthly_revenue: Union[int, float],
-    gross_margin: Union[int, float]
-) -> float:
+    cac: ArrayLike,
+    avg_monthly_revenue: ArrayLike,
+    gross_margin: ArrayLike
+) -> Union[float, NDArray[np.float64]]:
     """
     Calculate CAC Payback Period in months.
     
@@ -447,16 +494,16 @@ def payback_period(
     
     Parameters
     ----------
-    cac : int or float
+    cac : array-like
         Customer Acquisition Cost
-    avg_monthly_revenue : int or float
+    avg_monthly_revenue : array-like
         Average monthly revenue per customer
-    gross_margin : int or float
+    gross_margin : array-like
         Gross margin percentage (0-100)
         
     Returns
     -------
-    float
+    float or numpy.ndarray
         CAC Payback Period in months
         
     Examples
@@ -464,20 +511,30 @@ def payback_period(
     >>> payback_period(1000, 100, 70)
     14.29
     """
-    gross_margin_decimal = gross_margin / 100.0
+    cac_arr = _ensure_array(cac)
+    avg_monthly_revenue_arr = _ensure_array(avg_monthly_revenue)
+    gross_margin_arr = _ensure_array(gross_margin)
     
-    monthly_gross_profit = avg_monthly_revenue * gross_margin_decimal
+    gross_margin_decimal = gross_margin_arr / 100.0
     
-    if monthly_gross_profit == 0:
-        return float('inf')
+    monthly_gross_profit = avg_monthly_revenue_arr * gross_margin_decimal
     
-    return cac / monthly_gross_profit
-
+    result = np.full_like(monthly_gross_profit, np.inf, dtype=np.float64)
+    
+    non_zero_mask = monthly_gross_profit != 0
+    result[non_zero_mask] = cac_arr[non_zero_mask] / monthly_gross_profit[non_zero_mask]
+    
+    if (np.isscalar(cac) and 
+        np.isscalar(avg_monthly_revenue) and 
+        np.isscalar(gross_margin)):
+        return float(result[0])
+    
+    return result
 
 def customer_satisfaction_score(
-    satisfaction_ratings: Union[np.ndarray, list],
-    max_rating: Union[int, float] = 5
-) -> float:
+    satisfaction_ratings: ArrayLike,
+    max_rating: ArrayLike = 5
+) -> Union[float, NDArray[np.float64]]:
     """
     Calculate Customer Satisfaction Score (CSAT).
     
@@ -487,12 +544,12 @@ def customer_satisfaction_score(
     ----------
     satisfaction_ratings : array-like
         Array of customer satisfaction ratings
-    max_rating : int or float, default 5
+    max_rating : array-like, default 5
         Maximum possible rating value
         
     Returns
     -------
-    float
+    float or numpy.ndarray
         Customer Satisfaction Score as a percentage
         
     Examples
@@ -500,23 +557,24 @@ def customer_satisfaction_score(
     >>> customer_satisfaction_score([4, 5, 3, 5, 4])
     84.0
     """
-
-    if isinstance(satisfaction_ratings, list):
-        ratings = np.array(satisfaction_ratings)
-    else:
-        ratings = satisfaction_ratings
+    ratings = np.array(satisfaction_ratings, dtype=np.float64)
+    max_rating_arr = _ensure_array(max_rating)
     
     if len(ratings) == 0:
         return 0.0
     
     avg_rating = np.mean(ratings)
+    result = np.array([(avg_rating / max_rating_arr[0]) * 100.0], dtype=np.float64)
     
-    return (avg_rating / max_rating) * 100.0
+    if np.isscalar(max_rating):
+        return float(result[0])
+    
+    return result
 
 def customer_effort_score(
-    effort_ratings: Union[np.ndarray, list],
-    max_rating: Union[int, float] = 7
-) -> float:
+    effort_ratings: ArrayLike,
+    max_rating: ArrayLike = 7
+) -> Union[float, NDArray[np.float64]]:
     """
     Calculate Customer Effort Score (CES).
     
@@ -527,12 +585,12 @@ def customer_effort_score(
     ----------
     effort_ratings : array-like
         Array of customer effort ratings
-    max_rating : int or float, default 7
+    max_rating : array-like, default 7
         Maximum possible rating value
         
     Returns
     -------
-    float
+    float or numpy.ndarray
         Customer Effort Score (average)
         
     Examples
@@ -540,20 +598,22 @@ def customer_effort_score(
     >>> customer_effort_score([2, 3, 1, 2, 4])
     2.4
     """
-    if isinstance(effort_ratings, list):
-        ratings = np.array(effort_ratings)
-    else:
-        ratings = effort_ratings
+    ratings = np.array(effort_ratings, dtype=np.float64)
     
     if len(ratings) == 0:
         return 0.0
     
-    return np.mean(ratings)
+    result = np.array([np.mean(ratings)], dtype=np.float64)
+    
+    if np.isscalar(effort_ratings):
+        return float(result[0])
+    
+    return result
 
 def average_revenue_per_user(
-    total_revenue: Union[int, float, np.ndarray, list],
-    total_users: Union[int, float, np.ndarray, list]
-) -> Union[float, np.ndarray]:
+    total_revenue: ArrayLike,
+    total_users: ArrayLike
+) -> Union[float, NDArray[np.float64]]:
     """
     Calculate Average Revenue Per User (ARPU).
     
@@ -561,9 +621,9 @@ def average_revenue_per_user(
     
     Parameters
     ----------
-    total_revenue : int, float, array-like
+    total_revenue : array-like
         Total revenue for the period
-    total_users : int, float, array-like
+    total_users : array-like
         Total number of users or customers
         
     Returns
@@ -576,26 +636,23 @@ def average_revenue_per_user(
     >>> average_revenue_per_user(10000, 500)
     20.0
     """
-    if isinstance(total_revenue, list):
-        total_revenue = np.array(total_revenue)
-    if isinstance(total_users, list):
-        total_users = np.array(total_users)
+    total_revenue_arr = _ensure_array(total_revenue)
+    total_users_arr = _ensure_array(total_users)
     
-    if np.isscalar(total_users):
-        if total_users == 0:
-            return 0.0
-        return total_revenue / total_users
+    result = np.zeros_like(total_users_arr, dtype=np.float64)
     
-    result = np.zeros_like(total_users, dtype=float)
-    non_zero_mask = total_users != 0
-    result[non_zero_mask] = total_revenue[non_zero_mask] / total_users[non_zero_mask]
+    non_zero_mask = total_users_arr != 0
+    result[non_zero_mask] = total_revenue_arr[non_zero_mask] / total_users_arr[non_zero_mask]
+    
+    if (np.isscalar(total_revenue) and np.isscalar(total_users)):
+        return float(result[0])
     
     return result
 
 def average_revenue_per_paying_user(
-    total_revenue: Union[int, float],
-    paying_users: Union[int, float]
-) -> float:
+    total_revenue: ArrayLike,
+    paying_users: ArrayLike
+) -> Union[float, NDArray[np.float64]]:
     """
     Calculate Average Revenue Per Paying User (ARPPU).
     
@@ -603,14 +660,14 @@ def average_revenue_per_paying_user(
     
     Parameters
     ----------
-    total_revenue : int or float
+    total_revenue : array-like
         Total revenue for the period
-    paying_users : int or float
+    paying_users : array-like
         Number of paying users or customers
         
     Returns
     -------
-    float
+    float or numpy.ndarray
         Average Revenue Per Paying User
         
     Examples
@@ -618,15 +675,23 @@ def average_revenue_per_paying_user(
     >>> average_revenue_per_paying_user(10000, 200)
     50.0
     """
-    if paying_users == 0:
-        return 0.0
+    total_revenue_arr = _ensure_array(total_revenue)
+    paying_users_arr = _ensure_array(paying_users)
     
-    return total_revenue / paying_users
+    result = np.zeros_like(paying_users_arr, dtype=np.float64)
+    
+    non_zero_mask = paying_users_arr != 0
+    result[non_zero_mask] = total_revenue_arr[non_zero_mask] / paying_users_arr[non_zero_mask]
+    
+    if (np.isscalar(total_revenue) and np.isscalar(paying_users)):
+        return float(result[0])
+    
+    return result
 
 def conversion_rate(
-    conversions: Union[int, float, np.ndarray, list],
-    total_visitors: Union[int, float, np.ndarray, list]
-) -> Union[float, np.ndarray]:
+    conversions: ArrayLike,
+    total_visitors: ArrayLike
+) -> Union[float, NDArray[np.float64]]:
     """
     Calculate Conversion Rate.
     
@@ -634,9 +699,9 @@ def conversion_rate(
     
     Parameters
     ----------
-    conversions : int, float, array-like
+    conversions : array-like
         Number of conversions (desired actions taken)
-    total_visitors : int, float, array-like
+    total_visitors : array-like
         Total number of visitors or users
         
     Returns
@@ -649,26 +714,23 @@ def conversion_rate(
     >>> conversion_rate(50, 1000)
     5.0
     """
-    if isinstance(conversions, list):
-        conversions = np.array(conversions)
-    if isinstance(total_visitors, list):
-        total_visitors = np.array(total_visitors)
+    conversions_arr = _ensure_array(conversions)
+    total_visitors_arr = _ensure_array(total_visitors)
     
-    if np.isscalar(total_visitors):
-        if total_visitors == 0:
-            return 0.0
-        return (conversions / total_visitors) * 100.0
+    result = np.zeros_like(total_visitors_arr, dtype=np.float64)
     
-    result = np.zeros_like(total_visitors, dtype=float)
-    non_zero_mask = total_visitors != 0
-    result[non_zero_mask] = (conversions[non_zero_mask] / total_visitors[non_zero_mask]) * 100.0
+    non_zero_mask = total_visitors_arr != 0
+    result[non_zero_mask] = (conversions_arr[non_zero_mask] / total_visitors_arr[non_zero_mask]) * 100.0
+    
+    if (np.isscalar(conversions) and np.isscalar(total_visitors)):
+        return float(result[0])
     
     return result
 
 def customer_engagement_score(
-    active_days: Union[int, float],
-    total_days: Union[int, float]
-) -> float:
+    active_days: ArrayLike,
+    total_days: ArrayLike
+) -> Union[float, NDArray[np.float64]]:
     """
     Calculate Customer Engagement Score.
     
@@ -676,14 +738,14 @@ def customer_engagement_score(
     
     Parameters
     ----------
-    active_days : int or float
+    active_days : array-like
         Number of days the customer was active
-    total_days : int or float
+    total_days : array-like
         Total number of days in the period
         
     Returns
     -------
-    float
+    float or numpy.ndarray
         Customer Engagement Score as a percentage
         
     Examples
@@ -691,15 +753,23 @@ def customer_engagement_score(
     >>> customer_engagement_score(15, 30)
     50.0
     """
-    if total_days == 0:
-        return 0.0
+    active_days_arr = _ensure_array(active_days)
+    total_days_arr = _ensure_array(total_days)
     
-    return (active_days / total_days) * 100.0
+    result = np.zeros_like(total_days_arr, dtype=np.float64)
+    
+    non_zero_mask = total_days_arr != 0
+    result[non_zero_mask] = (active_days_arr[non_zero_mask] / total_days_arr[non_zero_mask]) * 100.0
+    
+    if (np.isscalar(active_days) and np.isscalar(total_days)):
+        return float(result[0])
+    
+    return result
 
 def daily_active_users_ratio(
-    daily_active_users: Union[int, float],
-    total_users: Union[int, float]
-) -> float:
+    daily_active_users: ArrayLike,
+    total_users: ArrayLike
+) -> Union[float, NDArray[np.float64]]:
     """
     Calculate Daily Active Users (DAU) Ratio.
     
@@ -707,14 +777,14 @@ def daily_active_users_ratio(
     
     Parameters
     ----------
-    daily_active_users : int or float
+    daily_active_users : array-like
         Number of daily active users
-    total_users : int or float
+    total_users : array-like
         Total number of users
         
     Returns
     -------
-    float
+    float or numpy.ndarray
         Daily Active Users Ratio as a percentage
         
     Examples
@@ -722,15 +792,23 @@ def daily_active_users_ratio(
     >>> daily_active_users_ratio(500, 2000)
     25.0
     """
-    if total_users == 0:
-        return 0.0
+    daily_active_users_arr = _ensure_array(daily_active_users)
+    total_users_arr = _ensure_array(total_users)
     
-    return (daily_active_users / total_users) * 100.0
+    result = np.zeros_like(total_users_arr, dtype=np.float64)
+    
+    non_zero_mask = total_users_arr != 0
+    result[non_zero_mask] = (daily_active_users_arr[non_zero_mask] / total_users_arr[non_zero_mask]) * 100.0
+    
+    if (np.isscalar(daily_active_users) and np.isscalar(total_users)):
+        return float(result[0])
+    
+    return result
 
 def monthly_active_users_ratio(
-    monthly_active_users: Union[int, float],
-    total_users: Union[int, float]
-) -> float:
+    monthly_active_users: ArrayLike,
+    total_users: ArrayLike
+) -> Union[float, NDArray[np.float64]]:
     """
     Calculate Monthly Active Users (MAU) Ratio.
     
@@ -738,14 +816,14 @@ def monthly_active_users_ratio(
     
     Parameters
     ----------
-    monthly_active_users : int or float
+    monthly_active_users : array-like
         Number of monthly active users
-    total_users : int or float
+    total_users : array-like
         Total number of users
         
     Returns
     -------
-    float
+    float or numpy.ndarray
         Monthly Active Users Ratio as a percentage
         
     Examples
@@ -753,15 +831,23 @@ def monthly_active_users_ratio(
     >>> monthly_active_users_ratio(1500, 2000)
     75.0
     """
-    if total_users == 0:
-        return 0.0
+    monthly_active_users_arr = _ensure_array(monthly_active_users)
+    total_users_arr = _ensure_array(total_users)
     
-    return (monthly_active_users / total_users) * 100.0
+    result = np.zeros_like(total_users_arr, dtype=np.float64)
+    
+    non_zero_mask = total_users_arr != 0
+    result[non_zero_mask] = (monthly_active_users_arr[non_zero_mask] / total_users_arr[non_zero_mask]) * 100.0
+    
+    if (np.isscalar(monthly_active_users) and np.isscalar(total_users)):
+        return float(result[0])
+    
+    return result
 
 def stickiness_ratio(
-    daily_active_users: Union[int, float],
-    monthly_active_users: Union[int, float]
-) -> float:
+    daily_active_users: ArrayLike,
+    monthly_active_users: ArrayLike
+) -> Union[float, NDArray[np.float64]]:
     """
     Calculate Stickiness Ratio (DAU/MAU).
     
@@ -769,14 +855,14 @@ def stickiness_ratio(
     
     Parameters
     ----------
-    daily_active_users : int or float
+    daily_active_users : array-like
         Number of daily active users
-    monthly_active_users : int or float
+    monthly_active_users : array-like
         Number of monthly active users
         
     Returns
     -------
-    float
+    float or numpy.ndarray
         Stickiness Ratio as a percentage
         
     Examples
@@ -784,15 +870,24 @@ def stickiness_ratio(
     >>> stickiness_ratio(500, 1500)
     33.33
     """
-    if monthly_active_users == 0:
-        return 0.0
+    daily_active_users_arr = _ensure_array(daily_active_users)
+    monthly_active_users_arr = _ensure_array(monthly_active_users)
     
-    return (daily_active_users / monthly_active_users) * 100.0
+    result = np.zeros_like(monthly_active_users_arr, dtype=np.float64)
+    
+    non_zero_mask = monthly_active_users_arr != 0
+    result[non_zero_mask] = (daily_active_users_arr[non_zero_mask] / monthly_active_users_arr[non_zero_mask]) * 100.0
+    
+    if (np.isscalar(daily_active_users) and 
+        np.isscalar(monthly_active_users)):
+        return float(result[0])
+    
+    return result
 
 def gross_margin(
-    revenue: Union[int, float],
-    cost_of_goods_sold: Union[int, float]
-) -> float:
+    revenue: ArrayLike,
+    cost_of_goods_sold: ArrayLike
+) -> Union[float, NDArray[np.float64]]:
     """
     Calculate Gross Margin.
     
@@ -800,14 +895,14 @@ def gross_margin(
     
     Parameters
     ----------
-    revenue : int or float
+    revenue : array-like
         Total revenue
-    cost_of_goods_sold : int or float
+    cost_of_goods_sold : array-like
         Cost of goods sold
         
     Returns
     -------
-    float
+    float or numpy.ndarray
         Gross Margin as a percentage
         
     Examples
@@ -815,17 +910,26 @@ def gross_margin(
     >>> gross_margin(10000, 3000)
     70.0
     """
-    if revenue == 0:
-        return 0.0
+    revenue_arr = _ensure_array(revenue)
+    cost_of_goods_sold_arr = _ensure_array(cost_of_goods_sold)
     
-    gross_profit = revenue - cost_of_goods_sold
-    return (gross_profit / revenue) * 100.0
+    gross_profit = revenue_arr - cost_of_goods_sold_arr
+    
+    result = np.zeros_like(revenue_arr, dtype=np.float64)
+    
+    non_zero_mask = revenue_arr != 0
+    result[non_zero_mask] = (gross_profit[non_zero_mask] / revenue_arr[non_zero_mask]) * 100.0
+    
+    if (np.isscalar(revenue) and np.isscalar(cost_of_goods_sold)):
+        return float(result[0])
+    
+    return result
 
 def burn_rate(
-    starting_capital: Union[int, float],
-    ending_capital: Union[int, float],
-    months: Union[int, float]
-) -> float:
+    starting_capital: ArrayLike,
+    ending_capital: ArrayLike,
+    months: ArrayLike
+) -> Union[float, NDArray[np.float64]]:
     """
     Calculate Monthly Burn Rate.
     
@@ -833,16 +937,16 @@ def burn_rate(
     
     Parameters
     ----------
-    starting_capital : int or float
+    starting_capital : array-like
         Capital at the start of the period
-    ending_capital : int or float
+    ending_capital : array-like
         Capital at the end of the period
-    months : int or float
+    months : array-like
         Number of months in the period
         
     Returns
     -------
-    float
+    float or numpy.ndarray
         Monthly Burn Rate
         
     Examples
@@ -850,16 +954,28 @@ def burn_rate(
     >>> burn_rate(100000, 70000, 6)
     5000.0
     """
-    if months == 0:
-        return 0.0
+    starting_capital_arr = _ensure_array(starting_capital)
+    ending_capital_arr = _ensure_array(ending_capital)
+    months_arr = _ensure_array(months)
     
-    capital_used = starting_capital - ending_capital
-    return capital_used / months
+    capital_used = starting_capital_arr - ending_capital_arr
+    
+    result = np.zeros_like(months_arr, dtype=np.float64)
+    
+    non_zero_mask = months_arr != 0
+    result[non_zero_mask] = capital_used[non_zero_mask] / months_arr[non_zero_mask]
+    
+    if (np.isscalar(starting_capital) and 
+        np.isscalar(ending_capital) and 
+        np.isscalar(months)):
+        return float(result[0])
+    
+    return result
 
 def runway(
-    current_capital: Union[int, float],
-    monthly_burn_rate: Union[int, float]
-) -> float:
+    current_capital: ArrayLike,
+    monthly_burn_rate: ArrayLike
+) -> Union[float, NDArray[np.float64]]:
     """
     Calculate Runway in months.
     
@@ -867,14 +983,14 @@ def runway(
     
     Parameters
     ----------
-    current_capital : int or float
+    current_capital : array-like
         Current capital
-    monthly_burn_rate : int or float
+    monthly_burn_rate : array-like
         Monthly burn rate
         
     Returns
     -------
-    float
+    float or numpy.ndarray
         Runway in months
         
     Examples
@@ -882,16 +998,24 @@ def runway(
     >>> runway(100000, 5000)
     20.0
     """
-    if monthly_burn_rate == 0:
-        return float('inf')
+    current_capital_arr = _ensure_array(current_capital)
+    monthly_burn_rate_arr = _ensure_array(monthly_burn_rate)
     
-    return current_capital / monthly_burn_rate
+    result = np.full_like(monthly_burn_rate_arr, np.inf, dtype=np.float64)
+    
+    non_zero_mask = monthly_burn_rate_arr != 0
+    result[non_zero_mask] = current_capital_arr[non_zero_mask] / monthly_burn_rate_arr[non_zero_mask]
+    
+    if (np.isscalar(current_capital) and np.isscalar(monthly_burn_rate)):
+        return float(result[0])
+    
+    return result
 
 def virality_coefficient(
-    new_users: Union[int, float],
-    invites_sent: Union[int, float],
-    total_users: Union[int, float]
-) -> float:
+    new_users: ArrayLike,
+    invites_sent: ArrayLike,
+    total_users: ArrayLike
+) -> Union[float, NDArray[np.float64]]:
     """
     Calculate Virality Coefficient (K-factor).
     
@@ -899,16 +1023,16 @@ def virality_coefficient(
     
     Parameters
     ----------
-    new_users : int or float
+    new_users : array-like
         Number of new users from invites
-    invites_sent : int or float
+    invites_sent : array-like
         Number of invites sent
-    total_users : int or float
+    total_users : array-like
         Total number of users
         
     Returns
     -------
-    float
+    float or numpy.ndarray
         Virality Coefficient
         
     Examples
@@ -916,19 +1040,35 @@ def virality_coefficient(
     >>> virality_coefficient(100, 500, 1000)
     0.1
     """
-    if total_users == 0 or invites_sent == 0:
-        return 0.0
+    new_users_arr = _ensure_array(new_users)
+    invites_sent_arr = _ensure_array(invites_sent)
+    total_users_arr = _ensure_array(total_users)
     
-    invites_per_user = invites_sent / total_users
-    conversion_rate_val = new_users / invites_sent
+    result = np.zeros_like(total_users_arr, dtype=np.float64)
     
-    return invites_per_user * conversion_rate_val
+    valid_mask = (total_users_arr != 0) & (invites_sent_arr != 0)
+    
+    if np.any(valid_mask):
+        invites_per_user = np.zeros_like(total_users_arr, dtype=np.float64)
+        conversion_rate_val = np.zeros_like(invites_sent_arr, dtype=np.float64)
+        
+        invites_per_user[valid_mask] = invites_sent_arr[valid_mask] / total_users_arr[valid_mask]
+        conversion_rate_val[valid_mask] = new_users_arr[valid_mask] / invites_sent_arr[valid_mask]
+        
+        result[valid_mask] = invites_per_user[valid_mask] * conversion_rate_val[valid_mask]
+    
+    if (np.isscalar(new_users) and 
+        np.isscalar(invites_sent) and 
+        np.isscalar(total_users)):
+        return float(result[0])
+    
+    return result
 
 def time_to_value(
-    onboarding_time: Union[int, float],
-    setup_time: Union[int, float],
-    learning_time: Union[int, float]
-) -> float:
+    onboarding_time: ArrayLike,
+    setup_time: ArrayLike,
+    learning_time: ArrayLike
+) -> Union[float, NDArray[np.float64]]:
     """
     Calculate Time to Value (TTV).
     
@@ -936,16 +1076,16 @@ def time_to_value(
     
     Parameters
     ----------
-    onboarding_time : int or float
+    onboarding_time : array-like
         Time spent on onboarding
-    setup_time : int or float
+    setup_time : array-like
         Time spent on setup
-    learning_time : int or float
+    learning_time : array-like
         Time spent on learning
         
     Returns
     -------
-    float
+    float or numpy.ndarray
         Time to Value
         
     Examples
@@ -953,12 +1093,23 @@ def time_to_value(
     >>> time_to_value(2, 3, 5)
     10.0
     """
-    return onboarding_time + setup_time + learning_time
+    onboarding_time_arr = _ensure_array(onboarding_time)
+    setup_time_arr = _ensure_array(setup_time)
+    learning_time_arr = _ensure_array(learning_time)
+    
+    result = onboarding_time_arr + setup_time_arr + learning_time_arr
+    
+    if (np.isscalar(onboarding_time) and 
+        np.isscalar(setup_time) and 
+        np.isscalar(learning_time)):
+        return float(result[0])
+    
+    return result
 
 def feature_adoption_rate(
-    users_adopting_feature: Union[int, float],
-    total_users: Union[int, float]
-) -> float:
+    users_adopting_feature: ArrayLike,
+    total_users: ArrayLike
+) -> Union[float, NDArray[np.float64]]:
     """
     Calculate Feature Adoption Rate.
     
@@ -966,14 +1117,14 @@ def feature_adoption_rate(
     
     Parameters
     ----------
-    users_adopting_feature : int or float
+    users_adopting_feature : array-like
         Number of users who adopted the feature
-    total_users : int or float
+    total_users : array-like
         Total number of users
         
     Returns
     -------
-    float
+    float or numpy.ndarray
         Feature Adoption Rate as a percentage
         
     Examples
@@ -981,15 +1132,23 @@ def feature_adoption_rate(
     >>> feature_adoption_rate(300, 1000)
     30.0
     """
-    if total_users == 0:
-        return 0.0
+    users_adopting_feature_arr = _ensure_array(users_adopting_feature)
+    total_users_arr = _ensure_array(total_users)
     
-    return (users_adopting_feature / total_users) * 100.0
+    result = np.zeros_like(total_users_arr, dtype=np.float64)
+    
+    non_zero_mask = total_users_arr != 0
+    result[non_zero_mask] = (users_adopting_feature_arr[non_zero_mask] / total_users_arr[non_zero_mask]) * 100.0
+    
+    if (np.isscalar(users_adopting_feature) and np.isscalar(total_users)):
+        return float(result[0])
+    
+    return result
 
 def roi(
-    revenue: Union[int, float, np.ndarray, list],
-    costs: Union[int, float, np.ndarray, list]
-) -> Union[float, np.ndarray]:
+    revenue: ArrayLike,
+    costs: ArrayLike
+) -> Union[float, NDArray[np.float64]]:
     """
     Calculate Return on Investment (ROI).
     
@@ -997,9 +1156,9 @@ def roi(
     
     Parameters
     ----------
-    revenue : int, float, array-like
+    revenue : array-like
         Revenue or return from the investment
-    costs : int, float, array-like
+    costs : array-like
         Cost of the investment
         
     Returns
@@ -1014,18 +1173,15 @@ def roi(
     >>> roi([150, 200, 250], [100, 120, 150])
     array([50., 66.67, 66.67])
     """
-    if isinstance(revenue, list):
-        revenue = np.array(revenue)
-    if isinstance(costs, list):
-        costs = np.array(costs)
+    revenue_arr = _ensure_array(revenue)
+    costs_arr = _ensure_array(costs)
     
-    if np.isscalar(revenue) and np.isscalar(costs):
-        if costs == 0:
-            return 0.0
-        return ((revenue - costs) / costs) * 100.0
+    result = np.zeros_like(costs_arr, dtype=np.float64)
     
-    result = np.zeros_like(costs, dtype=float)
-    non_zero_mask = costs != 0
-    result[non_zero_mask] = ((revenue[non_zero_mask] - costs[non_zero_mask]) / costs[non_zero_mask]) * 100.0
+    non_zero_mask = costs_arr != 0
+    result[non_zero_mask] = ((revenue_arr[non_zero_mask] - costs_arr[non_zero_mask]) / costs_arr[non_zero_mask]) * 100.0
+    
+    if (np.isscalar(revenue) and np.isscalar(costs)):
+        return float(result[0])
     
     return result 

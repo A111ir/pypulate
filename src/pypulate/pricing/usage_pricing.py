@@ -41,10 +41,10 @@ def calculate_usage_price(
     >>> calculate_usage_price(metrics, rates, minimum_charge=10.0)
     10.0  # Max of calculated price and minimum charge
     """
-    total_price = sum(
-        usage * metric_rates.get(metric, 0)
+    total_price = float(sum(
+        usage * metric_rates.get(metric, 0.0)
         for metric, usage in usage_metrics.items()
-    )
+    ))
     
     total_price = max(total_price, minimum_charge)
     
@@ -89,4 +89,4 @@ def calculate_volume_discount(
         else:
             break
             
-    return base_price * volume * (1 - discount_rate) 
+    return float(base_price * volume * (1.0 - discount_rate)) 
